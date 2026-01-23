@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js 16 fullstack boilerplate using App Router, TypeScript, and Tailwind CSS v4. The project follows a phased development approach documented in `docs/PROJECT_ROADMAP.md`. Currently in Phase 1 (Foundation & Tooling).
+This is a Next.js 16 fullstack boilerplate using App Router, TypeScript, and Tailwind CSS v4. The project follows a phased development approach documented in `docs/PROJECT_ROADMAP.md`. Currently in Phase 2 (UI Architecture).
 
 **Tech Stack:**
 
@@ -12,7 +12,11 @@ This is a Next.js 16 fullstack boilerplate using App Router, TypeScript, and Tai
 - Language: TypeScript (strict mode enabled)
 - Styling: Tailwind CSS v4
 - Package Manager: pnpm
-- Planned: Shadcn UI (Phase 2), Drizzle ORM + PostgreSQL (Phase 3)
+- UI Components: Shadcn UI (Radix Primitives)
+- Icons: Lucide React
+- Theming: next-themes (Dark/Light mode)
+- Fonts: Inter (Google Fonts)
+- Planned: Drizzle ORM + PostgreSQL (Phase 3)
 
 ## Common Commands
 
@@ -26,12 +30,9 @@ pnpm start           # Start production server
 
 # Code Quality
 pnpm lint            # Run ESLint
+pnpm format          # Format code with Prettier
+pnpm check-types     # Type checking without emit
 ```
-
-**Additional scripts (to be added in Phase 1):**
-
-- `pnpm format` - Prettier formatting
-- `pnpm check-types` - Type checking without emit
 
 ## Architecture
 
@@ -42,8 +43,12 @@ app/                 # Next.js App Router directory
   ├── layout.tsx     # Root layout with fonts & metadata
   ├── page.tsx       # Main page
   └── globals.css    # Global styles (Tailwind v4)
+components/          # React components
+  ├── theme-provider.tsx  # Theme provider for dark/light mode
+  └── ui/            # Shadcn UI component primitives
 docs/                # Project documentation
-src/                 # Planned for: components, lib, db
+lib/                 # Utility functions
+  └── utils.ts       # Common utilities (cn() function)
 ```
 
 ### Path Aliases
@@ -64,10 +69,11 @@ src/                 # Planned for: components, lib, db
 
 3. **Commits**: Follow Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`)
 
-4. **UI Patterns** (planned for Phase 2):
+4. **UI Patterns**:
    - Shadcn UI for component primitives
    - CSS variables for theming (dark/light mode)
-   - `lib/utils.ts` will contain standard `cn()` utility
+   - `lib/utils.ts` contains standard `cn()` utility for class merging
+   - Use `ThemeProvider` for theme switching with next-themes
 
 5. **Security** (planned for Phase 5):
    - Use Server Actions for mutations
@@ -80,23 +86,43 @@ The `docs/` directory contains critical architectural context:
 
 - `docs/GENERAL_KNOWLEDGE.md` - Best practices, technology decisions, coding standards
 - `docs/PROJECT_ROADMAP.md` - 6-phase development plan
-- `docs/PHASE_1_FOUNDATION.md` - Current phase requirements (Prettier, Husky, Commitlint planned)
+- `docs/PHASE_2_UI.md` - Current phase requirements (UI Architecture)
 
 When making architectural decisions, reference these files first to maintain consistency with the project's long-term vision.
 
 ## Development Status
 
-**Phase 1 - In Progress:**
+**Phase 1 - Completed:**
 
 - Next.js initialized
 - ESLint configured
 - TypeScript strict mode enabled
 - Tailwind CSS v4 set up
-
-**Still needed in Phase 1:**
-
 - Prettier configuration
 - Husky + lint-staged for pre-commit hooks
 - Commitlint for Conventional Commits enforcement
 
-See `docs/PHASE_1_FOUNDATION.md` for specific implementation details and required dependencies.
+**Phase 2 - In Progress:**
+
+- Shadcn UI initialized with Tailwind CSS v4
+- Theme provider configured (next-themes)
+- Inter font configured
+- Core UI components installed:
+  - Button, Input, Label (Forms)
+  - Card (Layout)
+  - Dropdown Menu, Dialog, Sheet (Overlays)
+  - Sonner (Notifications)
+  - Avatar, Badge, Skeleton (Display)
+- Utility functions created (`lib/utils.ts`)
+
+**Still needed in Phase 2:**
+
+None - Phase 2 is complete!
+
+**Next Phase (Phase 3):**
+
+- Database setup with Drizzle ORM
+- PostgreSQL configuration
+- Database schema design
+
+See `docs/PROJECT_ROADMAP.md` for the complete development plan.
