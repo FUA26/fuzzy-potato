@@ -1,9 +1,11 @@
 # Phase 1: Foundation & Tooling
 
 ## objective
+
 Establish a strict, automated quality control environment before writing feature code.
 
 ## Tech Stack
+
 - **Framework**: Next.js 16 (Existing)
 - **Language**: TypeScript
 - **Package Manager**: pnpm (Implied by lockfile)
@@ -11,6 +13,7 @@ Establish a strict, automated quality control environment before writing feature
 ## Requirements
 
 ### 1. Code Quality (Linting & Formatting)
+
 - **ESLint**:
   - Extend `next/core-web-vitals`.
   - Enforce strict rules (no unused vars, no any).
@@ -19,6 +22,7 @@ Establish a strict, automated quality control environment before writing feature
   - Integrate with ESLint to avoid conflicts.
 
 ### 2. Git Hooks (Automated Checks)
+
 - **Husky**:
   - `pre-commit`: Run `lint-staged`.
   - `commit-msg`: Run `commitlint`.
@@ -31,6 +35,7 @@ Establish a strict, automated quality control environment before writing feature
 ## Implementation Details
 
 ### Dependencies
+
 ```bash
 pnpm add -D prettier eslint-config-prettier husky lint-staged @commitlint/cli @commitlint/config-conventional
 ```
@@ -38,6 +43,7 @@ pnpm add -D prettier eslint-config-prettier husky lint-staged @commitlint/cli @c
 ### Configuration Files
 
 **`.prettierrc`**
+
 ```json
 {
   "semi": false,
@@ -48,11 +54,13 @@ pnpm add -D prettier eslint-config-prettier husky lint-staged @commitlint/cli @c
 ```
 
 **`commitlint.config.js`**
+
 ```js
 module.exports = { extends: ['@commitlint/config-conventional'] }
 ```
 
 **`package.json` Updates**
+
 ```json
 "scripts": {
   "prepare": "husky",

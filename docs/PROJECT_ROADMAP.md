@@ -3,7 +3,9 @@
 This roadmap outlines the development phases for creating a robust, production-ready Next.js boilerplate.
 
 ## Phase 1: Foundation & Tooling
+
 **Goal**: Establish a solid codebase with strict quality controls.
+
 - **Deliverables**:
   - Next.js 14/15 Project Initialized.
   - ESLint & Prettier configured (strict rules).
@@ -12,7 +14,9 @@ This roadmap outlines the development phases for creating a robust, production-r
 - **Outcome**: A "clean" repository that refuses bad code.
 
 ## Phase 2: UI Architecture
+
 **Goal**: Create a beautiful, responsive, and themable UI system.
+
 - **Deliverables**:
   - Tailwind CSS configured.
   - Shadcn UI initialized.
@@ -21,7 +25,9 @@ This roadmap outlines the development phases for creating a robust, production-r
 - **Outcome**: A visual design system ready for feature development.
 
 ## Phase 3: Database & Backend
+
 **Goal**: robust data layer with type safety.
+
 - **Deliverables**:
   - Drizzle ORM setup + Drizzle Kit.
   - Database schema definition patterns.
@@ -30,7 +36,9 @@ This roadmap outlines the development phases for creating a robust, production-r
 - **Outcome**: Type-safe database interactions.
 
 ## Phase 4: Feature Implementation (Forms & Tables)
+
 **Goal**: Standardize common web app features.
+
 - **Deliverables**:
   - React Hook Form + Zod for complex forms.
   - TanStack Table for data grids.
@@ -38,7 +46,9 @@ This roadmap outlines the development phases for creating a robust, production-r
 - **Outcome**: Rapid development of CRUD interfaces.
 
 ## Phase 5: SEO, Metadata & Security
+
 **Goal**: Optimize for search engines and secure the application.
+
 - **Deliverables**:
   - SEO Metadata strategy (OpenGraph, Twitter Cards).
   - Sitemap & Robots.txt generation.
@@ -47,7 +57,9 @@ This roadmap outlines the development phases for creating a robust, production-r
 - **Outcome**: Safe and discoverable application.
 
 ## Phase 6: AI Collaboration & Documentation
+
 **Goal**: Finalize documentation for human and AI developers.
+
 - **Deliverables**:
   - Usage Guide / README.
   - "How to Contribute" docs.

@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a Next.js 16 fullstack boilerplate using App Router, TypeScript, and Tailwind CSS v4. The project follows a phased development approach documented in `docs/PROJECT_ROADMAP.md`. Currently in Phase 1 (Foundation & Tooling).
 
 **Tech Stack:**
+
 - Framework: Next.js 16.1.4 (App Router)
 - Language: TypeScript (strict mode enabled)
 - Styling: Tailwind CSS v4
@@ -28,12 +29,14 @@ pnpm lint            # Run ESLint
 ```
 
 **Additional scripts (to be added in Phase 1):**
+
 - `pnpm format` - Prettier formatting
 - `pnpm check-types` - Type checking without emit
 
 ## Architecture
 
 ### Project Structure
+
 ```
 app/                 # Next.js App Router directory
   ├── layout.tsx     # Root layout with fonts & metadata
@@ -44,6 +47,7 @@ src/                 # Planned for: components, lib, db
 ```
 
 ### Path Aliases
+
 - `@/*` maps to the root directory
 
 ### Key Architectural Decisions
@@ -73,6 +77,7 @@ src/                 # Planned for: components, lib, db
 ## Important Documentation
 
 The `docs/` directory contains critical architectural context:
+
 - `docs/GENERAL_KNOWLEDGE.md` - Best practices, technology decisions, coding standards
 - `docs/PROJECT_ROADMAP.md` - 6-phase development plan
 - `docs/PHASE_1_FOUNDATION.md` - Current phase requirements (Prettier, Husky, Commitlint planned)
@@ -82,12 +87,14 @@ When making architectural decisions, reference these files first to maintain con
 ## Development Status
 
 **Phase 1 - In Progress:**
+
 - Next.js initialized
 - ESLint configured
 - TypeScript strict mode enabled
 - Tailwind CSS v4 set up
 
 **Still needed in Phase 1:**
+
 - Prettier configuration
 - Husky + lint-staged for pre-commit hooks
 - Commitlint for Conventional Commits enforcement
