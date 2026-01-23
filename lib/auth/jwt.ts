@@ -1,7 +1,7 @@
-import { SignJWT, jwtVerify } from 'jose'
+import { SignJWT, jwtVerify, type JWTPayload } from 'jose'
 import { authConfig } from './config'
 
-export interface JWTPayload {
+export interface TokenPayload extends JWTPayload {
   userId: string
   email: string
   name?: string
@@ -10,7 +10,7 @@ export interface JWTPayload {
 /**
  * Sign a JWT token
  */
-export async function signToken(payload: JWTPayload): Promise<string> {
+export async function signToken(payload: TokenPayload): Promise<string> {
   const secret = new TextEncoder().encode(authConfig.jwtSecret)
   const token = await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
@@ -23,11 +23,11 @@ export async function signToken(payload: JWTPayload): Promise<string> {
 /**
  * Verify a JWT token
  */
-export async function verifyToken(token: string): Promise<JWTPayload | null> {
+export async function verifyToken(token: string): Promise<TokenPayload | null> {
   try {
     const secret = new TextEncoder().encode(authConfig.jwtSecret)
     const { payload } = await jwtVerify(token, secret)
-    return payload as JWTPayload
+    return payload as unknown as TokenPayload
   } catch {
     return null
   }
