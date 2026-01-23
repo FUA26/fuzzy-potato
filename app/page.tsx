@@ -76,7 +76,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="container flex flex-col items-center justify-center gap-6 py-24 text-center md:py-32">
         <Badge variant="outline" className="px-4 py-1.5">
-          v1.0.0 - Phase 2 Complete
+          v1.0.0 - Phase 4 Complete
         </Badge>
         <h1 className="text-balance bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
           Bandanaiera

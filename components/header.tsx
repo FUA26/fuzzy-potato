@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Menu, X } from 'lucide-react'
@@ -9,9 +8,8 @@ import { useState } from 'react'
 
 const navigation = [
   { name: 'Home', href: '/' },
+  { name: 'Dashboard', href: '/dashboard' },
   { name: 'Features', href: '#features' },
-  { name: 'Documentation', href: 'https://nextjs.org/docs' },
-  { name: 'GitHub', href: 'https://github.com' },
 ]
 
 export function Header() {
@@ -63,14 +61,11 @@ export function Header() {
 
         <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-x-4">
           <ThemeToggle />
-          <Button asChild size="sm">
-            <Link
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Get Started
-            </Link>
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/login">Login</Link>
+          </Button>
+          <Button size="sm" asChild>
+            <Link href="/register">Sign Up</Link>
           </Button>
         </div>
       </nav>
@@ -125,13 +120,20 @@ export function Header() {
                     <span className="text-sm font-medium">Theme</span>
                     <ThemeToggle />
                   </div>
-                  <Button asChild className="w-full">
+                  <Button variant="ghost" className="w-full" asChild>
                     <Link
-                      href="https://github.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href="/login"
+                      onClick={() => setMobileMenuOpen(false)}
                     >
-                      Get Started
+                      Login
+                    </Link>
+                  </Button>
+                  <Button className="w-full" asChild>
+                    <Link
+                      href="/register"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Sign Up
                     </Link>
                   </Button>
                 </div>

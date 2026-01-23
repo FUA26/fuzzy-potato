@@ -16,12 +16,10 @@ export function Banner() {
       <div className="container flex items-center justify-between px-4 py-2.5 text-sm">
         <p className="flex-1 text-center font-medium">
           <span className="hidden sm:inline">
-            🚀 Bandanaiera is now in Phase 2! Modern UI with Shadcn UI &
-            Tailwind CSS v4
+            🎉 Phase 4 Complete! Full authentication flow with login, register,
+            forgot password & dashboard
           </span>
-          <span className="sm:hidden">
-            🚀 Phase 2 Complete! Shadcn UI & Tailwind CSS v4
-          </span>
+          <span className="sm:hidden">🎉 Phase 4! Auth flow & dashboard</span>
         </p>
         <Button
           variant="ghost"
