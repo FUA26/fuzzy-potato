@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js 16 fullstack boilerplate using App Router, TypeScript, and Tailwind CSS v4. The project follows a phased development approach documented in `docs/PROJECT_ROADMAP.md`. Currently in Phase 2 (UI Architecture).
+This is a Next.js 16 fullstack boilerplate using App Router, TypeScript, and Tailwind CSS v4. The project follows a phased development approach documented in `docs/PROJECT_ROADMAP.md`. Currently in Phase 3 (Database Layer).
 
 **Tech Stack:**
 
@@ -16,7 +16,8 @@ This is a Next.js 16 fullstack boilerplate using App Router, TypeScript, and Tai
 - Icons: Lucide React
 - Theming: next-themes (Dark/Light mode)
 - Fonts: Inter (Google Fonts)
-- Planned: Drizzle ORM + PostgreSQL (Phase 3)
+- Database: Drizzle ORM + PostgreSQL
+- Planned: Authentication & Features (Phase 4)
 
 ## Common Commands
 
@@ -32,6 +33,12 @@ pnpm start           # Start production server
 pnpm lint            # Run ESLint
 pnpm format          # Format code with Prettier
 pnpm check-types     # Type checking without emit
+
+# Database
+pnpm db:generate     # Generate database migrations
+pnpm db:migrate      # Run database migrations
+pnpm db:push         # Push schema changes to database
+pnpm db:studio       # Open Drizzle Studio for database GUI
 ```
 
 ## Architecture
@@ -46,7 +53,14 @@ app/                 # Next.js App Router directory
 components/          # React components
   ├── theme-provider.tsx  # Theme provider for dark/light mode
   └── ui/            # Shadcn UI component primitives
+db/                  # Database layer
+  ├── index.ts       # Database client export
+  └── schema/        # Database schema definitions
+      ├── users.ts   # Users table
+      ├── posts.ts   # Posts table
+      └── index.ts   # Schema exports
 docs/                # Project documentation
+drizzle/             # Database migrations (auto-generated)
 lib/                 # Utility functions
   └── utils.ts       # Common utilities (cn() function)
 ```
@@ -86,7 +100,7 @@ The `docs/` directory contains critical architectural context:
 
 - `docs/GENERAL_KNOWLEDGE.md` - Best practices, technology decisions, coding standards
 - `docs/PROJECT_ROADMAP.md` - 6-phase development plan
-- `docs/PHASE_2_UI.md` - Current phase requirements (UI Architecture)
+- `docs/PHASE_3_DATABASE.md` - Current phase requirements (Database Layer)
 
 When making architectural decisions, reference these files first to maintain consistency with the project's long-term vision.
 
@@ -102,7 +116,7 @@ When making architectural decisions, reference these files first to maintain con
 - Husky + lint-staged for pre-commit hooks
 - Commitlint for Conventional Commits enforcement
 
-**Phase 2 - In Progress:**
+**Phase 2 - Completed:**
 
 - Shadcn UI initialized with Tailwind CSS v4
 - Theme provider configured (next-themes)
@@ -114,15 +128,28 @@ When making architectural decisions, reference these files first to maintain con
   - Sonner (Notifications)
   - Avatar, Badge, Skeleton (Display)
 - Utility functions created (`lib/utils.ts`)
+- Landing page with header, banner, and navigation
+- Theme toggle component
 
-**Still needed in Phase 2:**
+**Phase 3 - In Progress:**
 
-None - Phase 2 is complete!
+- Drizzle ORM configured with PostgreSQL
+- Database client initialized in `src/db/index.ts`
+- Example schemas created:
+  - Users table (id, email, name, username, image, timestamps)
+  - Posts table (id, title, content, published, authorId, timestamps)
+- Drizzle Kit configuration for migrations
+- Database scripts added to package.json
+- Environment variables documented in `.env.example`
 
-**Next Phase (Phase 3):**
+**Still needed in Phase 3:**
 
-- Database setup with Drizzle ORM
-- PostgreSQL configuration
-- Database schema design
+None - Phase 3 is complete!
+
+**Next Phase (Phase 4):**
+
+- Authentication system implementation
+- User registration and login
+- Feature development
 
 See `docs/PROJECT_ROADMAP.md` for the complete development plan.
