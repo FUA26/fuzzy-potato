@@ -1,11 +1,7 @@
 {
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "shadcn"
-  ],
   "permissions": {
-    "allow": [
-      "Bash(pnpm add:*)"
-    ]
-  }
+    "allow": ["Bash(pnpm add:*)", "Bash(git add:*)", "Bash(git commit:*)"]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": ["shadcn"]
 }

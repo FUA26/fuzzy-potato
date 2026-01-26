@@ -1,14 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  BadgeCheck,
-  Bell,
-  CreditCard,
-  Loader2,
-  LogOut,
-  Sparkles,
-} from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Settings, Loader2, LogOut, User, KeyRound } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -29,8 +23,10 @@ export function HeaderUser({
     name: string
     email: string
     avatar: string
+    username?: string
   }
 }) {
+  const router = useRouter()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const handleLogout = async () => {
@@ -42,13 +38,14 @@ export function HeaderUser({
       })
 
       if (response.ok) {
-        window.location.href = '/login'
+        router.push('/login')
       }
     } catch (error) {
       console.error('Logout failed:', error)
       setIsLoggingOut(false)
     }
   }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -71,35 +68,39 @@ export function HeaderUser({
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{user.name}</span>
-              <span className="truncate text-xs">{user.email}</span>
+              <span className="truncate text-xs text-muted-foreground">
+                {user.email}
+              </span>
+              {user.username && (
+                <span className="truncate text-xs text-muted-foreground">
+                  @{user.username}
+                </span>
+              )}
             </div>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Sparkles />
-            Upgrade to Pro
+          <DropdownMenuItem onClick={() => router.push('/profile')}>
+            <User className="mr-2 h-4 w-4" />
+            Profile
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push('/change-password')}>
+            <KeyRound className="mr-2 h-4 w-4" />
+            Change Password
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BadgeCheck />
-            Account
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard />
-            Billing
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Bell />
-            Notifications
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
-          {isLoggingOut ? <Loader2 className="animate-spin" /> : <LogOut />}
+        <DropdownMenuItem
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="text-destructive focus:text-destructive"
+        >
+          {isLoggingOut ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <LogOut className="mr-2 h-4 w-4" />
+          )}
           {isLoggingOut ? 'Logging out...' : 'Log out'}
         </DropdownMenuItem>
       </DropdownMenuContent>

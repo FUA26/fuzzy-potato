@@ -15,6 +15,7 @@ interface User {
   id: string
   name: string
   email: string
+  username?: string | null
   avatar?: string
 }
 
@@ -68,6 +69,7 @@ export default function BackofficeLayout({
     name: user.name || user.email.split('@')[0],
     email: user.email,
     avatar: user.avatar || '',
+    username: user.username || undefined,
   }
 
   return (
