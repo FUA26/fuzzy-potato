@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { name, description, isSystem } = body
+    const { name, description, isSystem, permissions } = body
 
     if (!name) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 })
@@ -92,6 +92,18 @@ export async function POST(req: NextRequest) {
         isSystem: isSystem || false,
       })
       .returning()
+
+    // If permissions provided, create role-permission associations
+    if (permissions && Array.isArray(permissions) && permissions.length > 0) {
+      const { rolePermissions } = await import('@/db/schema')
+
+      await db.insert(rolePermissions).values(
+        permissions.map((permissionId: string) => ({
+          roleId: newRole[0].id,
+          permissionId,
+        }))
+      )
+    }
 
     return NextResponse.json({ role: newRole[0] }, { status: 201 })
   } catch (error) {

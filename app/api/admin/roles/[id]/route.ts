@@ -29,7 +29,19 @@ export async function GET(
       return NextResponse.json({ error: 'Role not found' }, { status: 404 })
     }
 
-    return NextResponse.json({ role: role[0] })
+    // Fetch role permissions
+    const { rolePermissions } = await import('@/db/schema')
+    const permissions = await db
+      .select({ permissionId: rolePermissions.permissionId })
+      .from(rolePermissions)
+      .where(eq(rolePermissions.roleId, id))
+
+    return NextResponse.json({
+      role: {
+        ...role[0],
+        permissions: permissions.map((p) => p.permissionId),
+      },
+    })
   } catch (error) {
     console.error('Get role error:', error)
     return NextResponse.json(
@@ -59,7 +71,7 @@ export async function PUT(
     }
 
     const body = await req.json()
-    const { name, description, isSystem } = body
+    const { name, description, isSystem, permissions } = body
 
     // Check if role exists
     const existingRole = await db
@@ -105,6 +117,24 @@ export async function PUT(
       })
       .where(eq(roles.id, id))
       .returning()
+
+    // Update permissions if provided
+    if (permissions && Array.isArray(permissions)) {
+      const { rolePermissions } = await import('@/db/schema')
+
+      // Delete existing permissions
+      await db.delete(rolePermissions).where(eq(rolePermissions.roleId, id))
+
+      // Insert new permissions
+      if (permissions.length > 0) {
+        await db.insert(rolePermissions).values(
+          permissions.map((permissionId: string) => ({
+            roleId: id,
+            permissionId,
+          }))
+        )
+      }
+    }
 
     return NextResponse.json({ role: updatedRole[0] })
   } catch (error) {

@@ -70,7 +70,9 @@ export default function PermissionsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [editingPermission, setEditingPermission] = useState<Permission | null>(null)
+  const [editingPermission, setEditingPermission] = useState<Permission | null>(
+    null
+  )
 
   const form = useForm<PermissionFormValues>({
     resolver: zodResolver(permissionSchema),
@@ -272,6 +274,73 @@ export default function PermissionsPage() {
 
   return (
     <div className="space-y-4">
+      {/* Statistics Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Total Permissions</CardDescription>
+            <CardTitle className="text-2xl font-semibold tabular-nums">
+              {data.length}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            {data.filter((p) => p.resource === 'users').length} for users
+            resource
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Most Common Resource</CardDescription>
+            <CardTitle className="text-2xl font-semibold capitalize">
+              {data.length > 0
+                ? Object.entries(
+                    data.reduce(
+                      (acc, p) => {
+                        acc[p.resource] = (acc[p.resource] || 0) + 1
+                        return acc
+                      },
+                      {} as Record<string, number>
+                    )
+                  ).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A'
+                : 'N/A'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            {data.length > 0
+              ? `${
+                  Object.entries(
+                    data.reduce(
+                      (acc, p) => {
+                        acc[p.resource] = (acc[p.resource] || 0) + 1
+                        return acc
+                      },
+                      {} as Record<string, number>
+                    )
+                  ).sort((a, b) => b[1] - a[1])[0]?.[1] || 0
+                } permissions`
+              : 'No permissions'}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Action Distribution</CardDescription>
+            <CardTitle className="text-2xl font-semibold tabular-nums">
+              {
+                data.filter((p) =>
+                  ['create', 'update', 'delete'].includes(p.action)
+                ).length
+              }
+              :{data.filter((p) => p.action === 'read').length}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Write vs Read permissions
+          </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Permissions Management</CardTitle>
@@ -284,7 +353,10 @@ export default function PermissionsPage() {
             <div className="text-sm text-muted-foreground">
               Total: {data.length} permission{data.length !== 1 ? 's' : ''}
             </div>
-            <Dialog open={isDialogOpen} onOpenChange={handleCreateDialogOpenChange}>
+            <Dialog
+              open={isDialogOpen}
+              onOpenChange={handleCreateDialogOpenChange}
+            >
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="mr-2 h-4 w-4" />
@@ -431,7 +503,10 @@ export default function PermissionsPage() {
             </Dialog>
 
             {/* Edit Dialog */}
-            <Dialog open={isEditDialogOpen} onOpenChange={handleEditDialogOpenChange}>
+            <Dialog
+              open={isEditDialogOpen}
+              onOpenChange={handleEditDialogOpenChange}
+            >
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                   <DialogTitle>Edit Permission</DialogTitle>

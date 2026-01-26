@@ -79,9 +79,7 @@ export function getPermissionsColumns({
       cell: ({ row }) => {
         const slug = row.getValue('slug') as string
         return (
-          <code className="rounded bg-muted px-1.5 py-0.5 text-sm">
-            {slug}
-          </code>
+          <code className="rounded bg-muted px-1.5 py-0.5 text-sm">{slug}</code>
         )
       },
     },
@@ -106,8 +104,24 @@ export function getPermissionsColumns({
       ),
       cell: ({ row }) => {
         const action = row.getValue('action') as string
+
+        // Color mapping for actions
+        const actionColors: Record<string, string> = {
+          create:
+            'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-emerald-300',
+          read: 'bg-sky-100 text-sky-700 hover:bg-sky-200 border-sky-300',
+          update:
+            'bg-amber-100 text-amber-700 hover:bg-amber-200 border-amber-300',
+          delete: 'bg-rose-100 text-rose-700 hover:bg-rose-200 border-rose-300',
+          manage:
+            'bg-purple-100 text-purple-700 hover:bg-purple-200 border-purple-300',
+        }
+
         return (
-          <Badge variant="secondary" className="capitalize">
+          <Badge
+            variant="outline"
+            className={`capitalize ${actionColors[action] || ''}`}
+          >
             {action}
           </Badge>
         )
