@@ -15,7 +15,14 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { DataTablePagination } from './pagination'
 import { DataTableToolbar } from './toolbar'
 
@@ -25,6 +32,18 @@ interface DataTableProps<TData, TValue> {
   filterKey?: string
   toolbarPlaceholder?: string
   isLoading?: boolean
+  facetedFilters?: {
+    columnId: string
+    title: string
+    options: {
+      label: string
+      value: string
+      icon?: React.ComponentType<{ className?: string }>
+    }[]
+  }[]
+  renderActionBar?: (
+    table: ReturnType<typeof useReactTable<TData>>
+  ) => React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
@@ -33,6 +52,8 @@ export function DataTable<TData, TValue>({
   filterKey = 'name',
   toolbarPlaceholder = 'Filter...',
   isLoading = false,
+  facetedFilters,
+  renderActionBar,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -69,7 +90,9 @@ export function DataTable<TData, TValue>({
         table={table}
         filterKey={filterKey}
         placeholder={toolbarPlaceholder}
+        facetedFilters={facetedFilters}
       />
+      {renderActionBar?.(table)}
       <div className="rounded-md border">
         <Table>
           <TableHeader>

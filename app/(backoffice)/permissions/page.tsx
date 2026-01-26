@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { toast } from 'sonner'
-import { Plus } from 'lucide-react'
+import { Plus, Trash2, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -44,6 +44,14 @@ import {
 } from '@/components/ui/select'
 import { DataTable, type Permission } from '@/components/data-table'
 import { getPermissionsColumns } from '@/components/data-table/columns/permissions'
+import {
+  ActionBar,
+  ActionBarSelection,
+  ActionBarSeparator,
+  ActionBarGroup,
+  ActionBarItem,
+  ActionBarClose,
+} from '@/components/ui/action-bar'
 
 const permissionSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -271,6 +279,37 @@ export default function PermissionsPage() {
       form.reset()
     }
   }
+
+  // Handle bulk delete
+  const handleBulkDelete = useCallback(
+    async (selectedRows: Permission[]) => {
+      if (selectedRows.length === 0) return
+
+      const confirmed = window.confirm(
+        `Are you sure you want to delete ${selectedRows.length} permission(s)?`
+      )
+      if (!confirmed) return
+
+      try {
+        await Promise.all(
+          selectedRows.map((permission) =>
+            fetch(`/api/admin/permissions/${permission.id}`, {
+              method: 'DELETE',
+            })
+          )
+        )
+
+        toast.success(
+          `${selectedRows.length} permission(s) deleted successfully`
+        )
+        fetchPermissions()
+      } catch (error) {
+        console.error('Error deleting permissions:', error)
+        toast.error('Failed to delete permissions')
+      }
+    },
+    [fetchPermissions]
+  )
 
   return (
     <div className="space-y-4">
@@ -664,6 +703,57 @@ export default function PermissionsPage() {
             filterKey="name"
             toolbarPlaceholder="Filter permissions..."
             isLoading={isLoading}
+            facetedFilters={[
+              {
+                columnId: 'resource',
+                title: 'Resource',
+                options: resources.map((resource) => ({
+                  label: resource.charAt(0).toUpperCase() + resource.slice(1),
+                  value: resource,
+                })),
+              },
+              {
+                columnId: 'action',
+                title: 'Action',
+                options: actions.map((action) => ({
+                  label: action.charAt(0).toUpperCase() + action.slice(1),
+                  value: action,
+                })),
+              },
+            ]}
+            renderActionBar={(table) => {
+              const selectedRows = table.getFilteredSelectedRowModel().rows
+              const selectedPermissions = selectedRows.map(
+                (row) => row.original
+              )
+
+              return (
+                <ActionBar
+                  open={selectedRows.length > 0}
+                  onOpenChange={(open) => {
+                    if (!open) {
+                      table.toggleAllRowsSelected(false)
+                    }
+                  }}
+                >
+                  <ActionBarSelection>
+                    {selectedRows.length} selected
+                  </ActionBarSelection>
+                  <ActionBarSeparator />
+                  <ActionBarGroup>
+                    <ActionBarItem
+                      onSelect={() => handleBulkDelete(selectedPermissions)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete
+                    </ActionBarItem>
+                  </ActionBarGroup>
+                  <ActionBarClose>
+                    <X className="h-4 w-4" />
+                  </ActionBarClose>
+                </ActionBar>
+              )
+            }}
           />
         </CardContent>
       </Card>

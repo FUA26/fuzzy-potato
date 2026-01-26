@@ -6,17 +6,32 @@ import { Table } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableViewOptions } from './view-options'
+import { DataTableFacetedFilter } from './faceted-filter'
+
+interface FacetedFilterOption {
+  label: string
+  value: string
+  icon?: React.ComponentType<{ className?: string }>
+}
+
+interface FacetedFilter {
+  columnId: string
+  title: string
+  options: FacetedFilterOption[]
+}
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
   filterKey?: string
   placeholder?: string
+  facetedFilters?: FacetedFilter[]
 }
 
 export function DataTableToolbar<TData>({
   table,
   filterKey = 'name',
   placeholder = 'Filter...',
+  facetedFilters,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
 
@@ -31,6 +46,14 @@ export function DataTableToolbar<TData>({
           }
           className="h-9 w-[150px] lg:w-[250px]"
         />
+        {facetedFilters?.map((filter) => (
+          <DataTableFacetedFilter
+            key={filter.columnId}
+            column={table.getColumn(filter.columnId)}
+            title={filter.title}
+            options={filter.options}
+          />
+        ))}
         {isFiltered && (
           <Button
             variant="ghost"

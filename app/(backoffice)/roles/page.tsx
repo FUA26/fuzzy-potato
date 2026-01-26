@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { toast } from 'sonner'
-import { Plus } from 'lucide-react'
+import { Plus, Trash2, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -37,6 +37,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { DataTable, type Role } from '@/components/data-table'
 import { getRolesColumns } from '@/components/data-table/columns/roles'
+import {
+  ActionBar,
+  ActionBarSelection,
+  ActionBarSeparator,
+  ActionBarGroup,
+  ActionBarItem,
+  ActionBarClose,
+} from '@/components/ui/action-bar'
 
 const roleSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -277,6 +285,43 @@ export default function RolesPage() {
       form.reset()
     }
   }
+
+  // Handle bulk delete (only for custom roles)
+  const handleBulkDelete = useCallback(
+    async (selectedRows: Role[]) => {
+      if (selectedRows.length === 0) return
+
+      // Filter out system roles
+      const customRoles = selectedRows.filter((role) => !role.isSystem)
+
+      if (customRoles.length === 0) {
+        toast.error('System roles cannot be deleted')
+        return
+      }
+
+      const confirmed = window.confirm(
+        `Are you sure you want to delete ${customRoles.length} role(s)?`
+      )
+      if (!confirmed) return
+
+      try {
+        await Promise.all(
+          customRoles.map((role) =>
+            fetch(`/api/admin/roles/${role.id}`, {
+              method: 'DELETE',
+            })
+          )
+        )
+
+        toast.success(`${customRoles.length} role(s) deleted successfully`)
+        fetchRoles()
+      } catch (error) {
+        console.error('Error deleting roles:', error)
+        toast.error('Failed to delete roles')
+      }
+    },
+    [fetchRoles]
+  )
 
   return (
     <div className="space-y-4">
@@ -626,6 +671,57 @@ export default function RolesPage() {
             filterKey="name"
             toolbarPlaceholder="Filter roles..."
             isLoading={isLoading}
+            facetedFilters={[
+              {
+                columnId: 'isSystem',
+                title: 'Type',
+                options: [
+                  { label: 'System', value: 'true' },
+                  { label: 'Custom', value: 'false' },
+                ],
+              },
+            ]}
+            renderActionBar={(table) => {
+              const selectedRows = table.getFilteredSelectedRowModel().rows
+              const selectedRoles = selectedRows.map((row) => row.original)
+              const customRolesCount = selectedRoles.filter(
+                (role) => !role.isSystem
+              ).length
+
+              return (
+                <ActionBar
+                  open={selectedRows.length > 0}
+                  onOpenChange={(open) => {
+                    if (!open) {
+                      table.toggleAllRowsSelected(false)
+                    }
+                  }}
+                >
+                  <ActionBarSelection>
+                    {selectedRows.length} selected
+                    {customRolesCount < selectedRows.length && (
+                      <span className="text-muted-foreground">
+                        {' '}
+                        ({customRolesCount} custom)
+                      </span>
+                    )}
+                  </ActionBarSelection>
+                  <ActionBarSeparator />
+                  <ActionBarGroup>
+                    <ActionBarItem
+                      disabled={customRolesCount === 0}
+                      onSelect={() => handleBulkDelete(selectedRoles)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete
+                    </ActionBarItem>
+                  </ActionBarGroup>
+                  <ActionBarClose>
+                    <X className="h-4 w-4" />
+                  </ActionBarClose>
+                </ActionBar>
+              )
+            }}
           />
         </CardContent>
       </Card>
