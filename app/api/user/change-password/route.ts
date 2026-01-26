@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { users } from '@/db/schema'
-import { hashPassword, verifyPassword } from '@/lib/auth'
+import { hashPassword, verifyPassword, validatePassword } from '@/lib/auth/password'
 import { eq } from 'drizzle-orm'
-import { getAuthUser } from '@/lib/auth'
+import { auth } from '@/auth'
 
 /**
  * POST /api/user/change-password
@@ -11,11 +11,12 @@ import { getAuthUser } from '@/lib/auth'
  */
 export async function POST(req: NextRequest) {
   try {
-    const user = await getAuthUser(req)
-
-    if (!user) {
+    const session = await auth()
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    const userId = session.user.id
 
     const body = await req.json()
     const { currentPassword, newPassword } = body
@@ -29,7 +30,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate password strength
-    const { validatePassword } = await import('@/lib/auth')
     const passwordValidation = validatePassword(newPassword)
     if (!passwordValidation.valid) {
       return NextResponse.json(
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const userResult = await db
       .select()
       .from(users)
-      .where(eq(users.id, user.userId))
+      .where(eq(users.id, userId))
       .limit(1)
 
     if (userResult.length === 0) {
@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
         password: hashedPassword,
         updatedAt: new Date(),
       })
-      .where(eq(users.id, user.userId))
+      .where(eq(users.id, userId))
 
     console.log(`✅ Password changed for user: ${currentUser.email}`)
 

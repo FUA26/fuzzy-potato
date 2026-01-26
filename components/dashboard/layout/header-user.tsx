@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Settings, Loader2, LogOut, User, KeyRound } from 'lucide-react'
+import { Loader2, LogOut, User, KeyRound } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -32,14 +33,7 @@ export function HeaderUser({
   const handleLogout = async () => {
     setIsLoggingOut(true)
     try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      })
-
-      if (response.ok) {
-        router.push('/login')
-      }
+      await signOut({ callbackUrl: '/login' })
     } catch (error) {
       console.error('Logout failed:', error)
       setIsLoggingOut(false)

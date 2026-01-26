@@ -1,6 +1,5 @@
-'use client'
-
-import { useEffect, useState } from 'react'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 import { AppSidebar } from '@/components/dashboard/layout/app-sidebar'
 import { HeaderNotifications } from '@/components/dashboard/layout/header-notifications'
 import { HeaderUser } from '@/components/dashboard/layout/header-user'
@@ -9,67 +8,23 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { Loader2 } from 'lucide-react'
 
-interface User {
-  id: string
-  name: string
-  email: string
-  username?: string | null
-  avatar?: string
-}
-
-export default function BackofficeLayout({
+export default async function BackofficeLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const session = await auth()
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch('/api/auth/me', {
-          credentials: 'include',
-        })
-
-        if (!response.ok) {
-          // Not authenticated, redirect to login
-          window.location.href = '/login'
-          return
-        }
-
-        const data = await response.json()
-        setUser(data.user)
-      } catch (error) {
-        console.error('Failed to fetch user:', error)
-        window.location.href = '/login'
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchUser()
-  }, [])
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    )
-  }
-
-  if (!user) {
-    return null
+  if (!session?.user) {
+    redirect('/login')
   }
 
   const userDisplay = {
-    name: user.name || user.email.split('@')[0],
-    email: user.email,
-    avatar: user.avatar || '',
-    username: user.username || undefined,
+    name: session.user.name || session.user.email?.split('@')[0] || 'User',
+    email: session.user.email || '',
+    avatar: session.user.image || '',
+    username: undefined,
   }
 
   return (

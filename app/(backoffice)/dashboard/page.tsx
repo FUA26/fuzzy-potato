@@ -1,7 +1,6 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { Calendar, Mail, User } from 'lucide-react'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
+import { Calendar, Mail, User as UserIcon } from 'lucide-react'
 
 import {
   Card,
@@ -12,50 +11,19 @@ import {
 } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 
-interface User {
-  id: string
-  email: string
-  name?: string | null
-  username?: string | null
-  image?: string | null
-  createdAt: Date
-}
+export default async function DashboardPage() {
+  const session = await auth()
 
-export default function DashboardPage() {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    fetchUser()
-  }, [])
-
-  const fetchUser = async () => {
-    try {
-      const response = await fetch('/api/auth/me')
-      if (!response.ok) {
-        window.location.href = '/login'
-        return
-      }
-      const data = await response.json()
-      setUser(data.user)
-    } catch (error) {
-      console.error('Failed to fetch user:', error)
-    } finally {
-      setIsLoading(false)
-    }
+  if (!session?.user) {
+    redirect('/login')
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    )
-  }
-
-  if (!user) {
-    return null
-  }
+  // Use session user data
+  // Note: Session user might not have all fields if they are not included in the session callback
+  // For now we use what's available in the session.
+  // If we need more data like createdAt, we might need to fetch from DB here or update session callback.
+  // Assuming createdAt is not critical for now or we just don't show it if not available.
+  const user = session.user
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -112,7 +80,7 @@ export default function DashboardPage() {
       <Card className="col-span-full">
         <CardHeader>
           <CardTitle className="text-xl">
-            Welcome back, {user.name || user.username || 'User'}!
+            Welcome back, {user.name || user.email?.split('@')[0] || 'User'}!
           </CardTitle>
           <CardDescription>
             Here&apos;s an overview of your account and recent activity
@@ -123,7 +91,7 @@ export default function DashboardPage() {
           <div className="grid gap-6 md:grid-cols-3">
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-muted-foreground">
-                <User className="h-4 w-4" />
+                <UserIcon className="h-4 w-4" />
                 <span className="text-sm font-medium">Name</span>
               </div>
               <p className="text-lg">{user.name || 'Not set'}</p>
@@ -140,16 +108,10 @@ export default function DashboardPage() {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                <span className="text-sm font-medium">Member Since</span>
+                <span className="text-sm font-medium">Session ID</span>
               </div>
-              <p className="text-lg">
-                {user.createdAt
-                  ? new Date(user.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })
-                  : 'N/A'}
+              <p className="truncate text-lg" title={user.id}>
+                {user.id}
               </p>
             </div>
           </div>

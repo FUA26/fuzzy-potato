@@ -1,6 +1,6 @@
+import { auth } from '@/auth'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { jwtVerify } from 'jose'
 
 // ============================================================================
 // Rate Limiting
@@ -61,6 +61,7 @@ if (typeof setInterval !== 'undefined') {
 
 // Routes that don't require authentication
 const publicRoutes = [
+  '/',
   '/login',
   '/register',
   '/forgot-password',
@@ -68,16 +69,12 @@ const publicRoutes = [
 ]
 const authRoutes = ['/login', '/register']
 
-// Get JWT_SECRET at module level for Edge Runtime compatibility
-const JWT_SECRET =
-  process.env.JWT_SECRET || 'your-secret-key-change-this-in-production'
-
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+export default auth((req) => {
+  const { pathname } = req.nextUrl
 
   // Apply rate limiting to API routes
-  if (pathname.startsWith('/api')) {
-    const identifier = getClientIdentifier(request)
+  if (pathname.startsWith('/api') && !pathname.startsWith('/api/auth')) {
+    const identifier = getClientIdentifier(req)
     const { allowed, remaining } = checkRateLimit(identifier)
 
     if (!allowed) {
@@ -105,38 +102,25 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Get token from cookie
-  const token = request.cookies.get('auth_token')?.value
-
-  // Check if user is authenticated
-  let isAuthenticated = false
-  if (token) {
-    try {
-      const secret = new TextEncoder().encode(JWT_SECRET)
-      const { payload } = await jwtVerify(token, secret)
-      isAuthenticated = !!payload?.userId
-    } catch {
-      // Invalid token, continue as unauthenticated
-      isAuthenticated = false
-    }
-  }
+  const isLoggedIn = !!req.auth?.user
 
   // Redirect to dashboard if trying to access auth routes while authenticated
-  if (authRoutes.includes(pathname) && isAuthenticated) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  if (authRoutes.includes(pathname) && isLoggedIn) {
+    return NextResponse.redirect(new URL('/dashboard', req.url))
   }
 
   // Redirect to login if trying to access protected route while not authenticated
   if (
-    !isAuthenticated &&
+    !isLoggedIn &&
     !publicRoutes.some((route) => pathname.startsWith(route))
   ) {
-    const url = new URL('/login', request.url)
+    const url = new URL('/login', req.url)
     url.searchParams.set('callbackUrl', encodeURI(pathname))
     return NextResponse.redirect(url)
   }
+
   return NextResponse.next()
-}
+})
 
 export const config = {
   matcher: [

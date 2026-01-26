@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { permissions } from '@/db/schema'
 import { eq } from 'drizzle-orm'
-import { verifyToken } from '@/lib/auth'
+import { auth } from '@/auth'
 
 // Get single permission
 export async function GET(
@@ -10,18 +10,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params
-    const cookieStore = await req.cookies
-    const token = cookieStore.get('auth_token')?.value
-
-    if (!token) {
+    const session = await auth()
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const payload = await verifyToken(token)
-    if (!payload) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-    }
+    const { id } = await params
 
     const permission = await db
       .select()
@@ -52,19 +46,12 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params
-    const cookieStore = await req.cookies
-    const token = cookieStore.get('auth_token')?.value
-
-    if (!token) {
+    const session = await auth()
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const payload = await verifyToken(token)
-    if (!payload) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-    }
-
+    const { id } = await params
     const body = await req.json()
     const { name, slug, description, resource, action } = body
 
@@ -128,18 +115,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params
-    const cookieStore = await req.cookies
-    const token = cookieStore.get('auth_token')?.value
-
-    if (!token) {
+    const session = await auth()
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const payload = await verifyToken(token)
-    if (!payload) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-    }
+    const { id } = await params
 
     // Check if permission exists
     const existingPermission = await db

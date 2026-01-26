@@ -104,7 +104,7 @@ export function withAuth(
  * Middleware to require specific user roles
  * (You'll need to extend this after implementing role management)
  */
-export function withRole(roles: string[]) {
+export function withRole(_roles: string[]) {
   return (
     handler: (
       request: NextRequest,

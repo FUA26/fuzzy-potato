@@ -52,6 +52,7 @@ export function AccessibilityWidget() {
 
   // Load state from localStorage on mount
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     try {
       const saved = localStorage.getItem(STORAGE_KEY);

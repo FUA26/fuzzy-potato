@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 
 export function LanguageSwitcher() {
   const router = useRouter();
-  const [_isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const locale = useLocale();
 
   const changeLanguage = (nextLocale: string) => {

@@ -2,140 +2,102 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { users } from '@/db/schema'
 import { eq } from 'drizzle-orm'
-import { getAuthUser } from '@/lib/auth'
+import { auth } from '@/auth'
 
-/**
- * GET /api/user/profile
- * Get current user profile
- */
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const user = await getAuthUser(req)
-
-    if (!user) {
+    const session = await auth()
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Fetch user from database
-    const userResult = await db
+    const userId = session.user.id
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 })
+    }
+
+    const user = await db
       .select({
         id: users.id,
-        email: users.email,
         name: users.name,
+        email: users.email,
         username: users.username,
         image: users.image,
         createdAt: users.createdAt,
       })
       .from(users)
-      .where(eq(users.id, user.userId))
+      .where(eq(users.id, userId))
       .limit(1)
 
-    if (userResult.length === 0) {
+    if (user.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    return NextResponse.json({ user: userResult[0] })
+    return NextResponse.json({ user: user[0] })
   } catch (error) {
     console.error('Get profile error:', error)
     return NextResponse.json(
-      { error: 'Terjadi kesalahan server' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
 }
 
-/**
- * PUT /api/user/profile
- * Update current user profile
- */
 export async function PUT(req: NextRequest) {
   try {
-    const user = await getAuthUser(req)
-
-    if (!user) {
+    const session = await auth()
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await req.json()
-    const { name, username, image } = body
-
-    // Validate input
-    if (!name && !username && !image) {
-      return NextResponse.json(
-        { error: 'Setidaknya satu field harus diisi' },
-        { status: 400 }
-      )
+    const userId = session.user.id
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 })
     }
 
-    // Validate username format if provided
-    if (username) {
-      const usernameRegex = /^[a-zA-Z0-9_]{3,30}$/
-      if (!usernameRegex.test(username)) {
-        return NextResponse.json(
-          {
-            error:
-              'Username harus 3-30 karakter dan hanya boleh berisi huruf, angka, dan underscore',
-          },
-          { status: 400 }
-        )
-      }
+    const body = await req.json()
+    const { name, username } = body
 
-      // Check if username is already taken by another user
-      const existingUsername = await db
+    // Validate input
+    if (username) {
+      // Check if username is taken by another user
+      const existingUser = await db
         .select()
         .from(users)
         .where(eq(users.username, username))
         .limit(1)
 
-      if (
-        existingUsername.length > 0 &&
-        existingUsername[0].id !== user.userId
-      ) {
+      if (existingUser.length > 0 && existingUser[0].id !== userId) {
         return NextResponse.json(
-          { error: 'Username sudah digunakan' },
+          { error: 'Username already taken' },
           { status: 400 }
         )
       }
     }
 
-    // Update user
-    const updateData: {
-      name?: string
-      username?: string
-      image?: string
-      updatedAt: Date
-    } = { updatedAt: new Date() }
-    if (name) updateData.name = name
-    if (username) updateData.username = username
-    if (image) updateData.image = image
-
     const updatedUser = await db
       .update(users)
-      .set(updateData)
-      .where(eq(users.id, user.userId))
+      .set({
+        name: name || undefined,
+        username: username || undefined,
+      })
+      .where(eq(users.id, userId))
       .returning({
         id: users.id,
-        email: users.email,
         name: users.name,
+        email: users.email,
         username: users.username,
         image: users.image,
-        createdAt: users.createdAt,
       })
 
-    if (updatedUser.length === 0) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    console.log(`✅ Profile updated for user: ${updatedUser[0].email}`)
-
     return NextResponse.json({
-      message: 'Profile berhasil diupdate',
+      message: 'Profile updated successfully',
       user: updatedUser[0],
     })
   } catch (error) {
     console.error('Update profile error:', error)
     return NextResponse.json(
-      { error: 'Terjadi kesalahan server' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

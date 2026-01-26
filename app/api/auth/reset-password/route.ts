@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { users } from '@/db/schema'
 import { hashPassword, validatePassword } from '@/lib/auth'
-import { eq, or } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
 /**
  * Rate limiting store for reset password attempts

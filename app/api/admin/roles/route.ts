@@ -2,21 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { roles } from '@/db/schema'
 import { eq, like, or } from 'drizzle-orm'
-import { verifyToken } from '@/lib/auth'
+import { auth } from '@/auth'
 
 // Get all roles
 export async function GET(req: NextRequest) {
   try {
-    const cookieStore = await req.cookies
-    const token = cookieStore.get('auth_token')?.value
-
-    if (!token) {
+    const session = await auth()
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const payload = await verifyToken(token)
-    if (!payload) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
     const { searchParams } = new URL(req.url)
@@ -51,16 +44,9 @@ export async function GET(req: NextRequest) {
 // Create new role
 export async function POST(req: NextRequest) {
   try {
-    const cookieStore = await req.cookies
-    const token = cookieStore.get('auth_token')?.value
-
-    if (!token) {
+    const session = await auth()
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const payload = await verifyToken(token)
-    if (!payload) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
     const body = await req.json()

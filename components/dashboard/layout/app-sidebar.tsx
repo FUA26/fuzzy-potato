@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import {
-  Command,
   Frame,
   LifeBuoy,
   Map,
@@ -136,13 +135,13 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ ..._props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar
       variant="inset"
       collapsible="icon"
       className="bg-background border-r border-border"
-      {...props}
+      {..._props}
     >
       <SidebarHeader className="bg-background px-3 py-3">
         <SidebarMenu>

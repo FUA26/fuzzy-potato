@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -28,15 +30,20 @@ type LoginFormValues = z.infer<typeof loginSchema>
 export default function LoginPage() {
   const [error, setError] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
-  const [shouldRedirect, setShouldRedirect] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
 
+  // Check for error from NextAuth
   useEffect(() => {
-    if (shouldRedirect) {
-      window.location.href = '/dashboard'
+    const errorParam = searchParams.get('error')
+    if (errorParam === 'CredentialsSignin') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setError('Email atau password salah')
     }
-  }, [shouldRedirect])
+  }, [searchParams])
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -51,22 +58,20 @@ export default function LoginPage() {
     setError('')
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(values),
+      const result = await signIn('credentials', {
+        email: values.email,
+        password: values.password,
+        redirect: false,
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        setError(data.error || 'Login failed')
+      if (result?.error) {
+        setError('Email atau password salah')
         setIsLoading(false)
         return
       }
 
-      setShouldRedirect(true)
+      // Redirect on success
+      router.push(callbackUrl)
     } catch {
       setError('An error occurred. Please try again.')
       setIsLoading(false)
