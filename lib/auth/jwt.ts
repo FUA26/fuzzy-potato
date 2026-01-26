@@ -34,8 +34,38 @@ export async function verifyToken(token: string): Promise<TokenPayload | null> {
 }
 
 /**
- * Generate a random token for email verification or password reset
+ * Generate a cryptographically secure random token
  */
 export function generateRandomToken(): string {
-  return Math.random().toString(36).substring(2) + Date.now().toString(36)
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    // Use native crypto API if available (Node.js 16+, modern browsers)
+    return crypto.randomUUID()
+  }
+
+  // Fallback: generate a secure random token
+  const array = new Uint8Array(32)
+  if (typeof crypto !== 'undefined') {
+    crypto.getRandomValues(array)
+  } else {
+    // Node.js fallback
+    require('crypto').randomFillSync(array)
+  }
+
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * Generate a secure token with specified length
+ */
+export function generateSecureToken(length: number = 32): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const array = new Uint8Array(length)
+
+  if (typeof crypto !== 'undefined') {
+    crypto.getRandomValues(array)
+  } else {
+    require('crypto').randomFillSync(array)
+  }
+
+  return Array.from(array, (byte) => chars[byte % chars.length]).join('')
 }

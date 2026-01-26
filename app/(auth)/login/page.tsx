@@ -76,10 +76,10 @@ export default function LoginPage() {
   return (
     <>
       <div className="mb-6">
-        <h2 className="mb-2 text-2xl font-bold text-slate-800 sm:text-3xl">
+        <h2 className="mb-2 text-2xl font-bold text-foreground sm:text-3xl">
           Selamat Datang Kembali
         </h2>
-        <p className="text-sm text-slate-600 sm:text-base">
+        <p className="text-sm text-muted-foreground sm:text-base">
           Masuk untuk mengakses layanan digital Kabupaten Naiera
         </p>
       </div>
@@ -99,20 +99,20 @@ export default function LoginPage() {
         <div>
           <label
             htmlFor="email"
-            className="mb-2 block text-sm font-medium text-slate-700"
+            className="mb-2 block text-sm font-medium text-foreground"
           >
             Email atau NIK
           </label>
           <div className="relative">
             <Mail
               size={18}
-              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-muted-foreground"
             />
             <input
               type="text"
               id="email"
               placeholder="Masukkan email atau NIK"
-              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-4 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-input bg-card py-3 pr-4 pl-11 text-sm transition-all placeholder:text-muted-foreground focus:ring-2 focus:outline-none"
               {...form.register('email')}
             />
           </div>
@@ -127,26 +127,26 @@ export default function LoginPage() {
         <div>
           <label
             htmlFor="password"
-            className="mb-2 block text-sm font-medium text-slate-700"
+            className="mb-2 block text-sm font-medium text-foreground"
           >
             Password
           </label>
           <div className="relative">
             <Lock
               size={18}
-              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-muted-foreground"
             />
             <input
               type={showPassword ? 'text' : 'password'}
               id="password"
               placeholder="Masukkan password"
-              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-12 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-input bg-card py-3 pr-12 pl-11 text-sm transition-all placeholder:text-muted-foreground focus:ring-2 focus:outline-none"
               {...form.register('password')}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-1/2 right-3.5 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600"
+              className="absolute top-1/2 right-3.5 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -166,18 +166,18 @@ export default function LoginPage() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="peer checked:border-primary checked:bg-primary focus:ring-primary/20 h-4 w-4 cursor-pointer appearance-none rounded border border-slate-300 bg-white transition-colors focus:ring-2 focus:outline-none"
+                className="peer checked:border-primary checked:bg-primary focus:ring-primary/20 h-4 w-4 cursor-pointer appearance-none rounded border border-input bg-card transition-colors focus:ring-2 focus:outline-none"
               />
               <Check
                 size={12}
-                className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100"
+                className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary-foreground opacity-0 peer-checked:opacity-100"
               />
             </div>
-            <span className="text-sm text-slate-600">Ingat saya</span>
+            <span className="text-sm text-muted-foreground">Ingat saya</span>
           </label>
           <Link
             href="/forgot-password"
-            className="text-primary hover:text-primary-hover text-sm font-medium transition-colors"
+            className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
           >
             Lupa password?
           </Link>
@@ -187,7 +187,7 @@ export default function LoginPage() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="bg-primary hover:bg-primary-hover shadow-primary/25 hover:shadow-primary/40 h-12 w-full rounded-lg text-sm font-semibold text-white shadow-lg transition-all duration-300 disabled:opacity-50"
+          className="bg-primary hover:bg-primary/90 shadow-primary/25 hover:shadow-primary/40 h-12 w-full rounded-lg text-sm font-semibold text-primary-foreground shadow-lg transition-all duration-300 disabled:opacity-50"
         >
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isLoading ? 'Memproses...' : 'Masuk'}
@@ -196,10 +196,10 @@ export default function LoginPage() {
         {/* Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-200" />
+            <div className="w-full border-t border-border" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-4 text-slate-500">
+            <span className="bg-background px-4 text-muted-foreground">
               Atau masuk dengan
             </span>
           </div>
@@ -209,7 +209,7 @@ export default function LoginPage() {
         <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
-            className="flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-all hover:border-slate-400 hover:bg-slate-50"
+            className="flex items-center justify-center gap-2 rounded-lg border border-input bg-card px-4 py-3 text-sm font-medium text-foreground transition-all hover:border-primary hover:bg-accent"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path
@@ -233,7 +233,7 @@ export default function LoginPage() {
           </button>
           <button
             type="button"
-            className="flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-all hover:border-slate-400 hover:bg-slate-50"
+            className="flex items-center justify-center gap-2 rounded-lg border border-input bg-card px-4 py-3 text-sm font-medium text-foreground transition-all hover:border-primary hover:bg-accent"
           >
             <svg
               className="h-5 w-5"
@@ -256,11 +256,11 @@ export default function LoginPage() {
       </form>
 
       {/* Register Link */}
-      <p className="mt-8 text-center text-sm text-slate-600">
+      <p className="mt-8 text-center text-sm text-muted-foreground">
         Belum punya akun?{' '}
         <Link
           href="/register"
-          className="group text-primary hover:text-primary-hover inline-flex items-center gap-1 font-semibold transition-colors"
+          className="group text-primary hover:text-primary/80 inline-flex items-center gap-1 font-semibold transition-colors"
         >
           Daftar sekarang
           <ArrowRight

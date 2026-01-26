@@ -67,10 +67,10 @@ export default function ForgotPasswordPage() {
             <CheckCircle2 className="h-8 w-8 text-primary" />
           </div>
         </div>
-        <h2 className="mb-2 text-2xl font-bold text-slate-800 sm:text-3xl">
+        <h2 className="mb-2 text-2xl font-bold text-foreground sm:text-3xl">
           Cek Email Anda
         </h2>
-        <p className="mb-8 text-sm text-slate-600 sm:text-base">
+        <p className="mb-8 text-sm text-muted-foreground sm:text-base">
           Kami telah mengirimkan link reset password ke email Anda
         </p>
         <Link href="/login">
@@ -89,10 +89,10 @@ export default function ForgotPasswordPage() {
   return (
     <>
       <div className="mb-6">
-        <h2 className="mb-2 text-2xl font-bold text-slate-800 sm:text-3xl">
+        <h2 className="mb-2 text-2xl font-bold text-foreground sm:text-3xl">
           Lupa Password?
         </h2>
-        <p className="text-sm text-slate-600 sm:text-base">
+        <p className="text-sm text-muted-foreground sm:text-base">
           Masukkan email Anda dan kami akan mengirimkan link untuk reset
           password
         </p>
@@ -113,20 +113,20 @@ export default function ForgotPasswordPage() {
         <div>
           <label
             htmlFor="email"
-            className="mb-2 block text-sm font-medium text-slate-700"
+            className="mb-2 block text-sm font-medium text-foreground"
           >
             Email
           </label>
           <div className="relative">
             <Mail
               size={18}
-              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-muted-foreground"
             />
             <input
               type="email"
               id="email"
               placeholder="Masukkan email Anda"
-              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-4 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-input bg-card py-3 pr-4 pl-11 text-sm transition-all placeholder:text-muted-foreground focus:ring-2 focus:outline-none"
               {...form.register('email')}
             />
           </div>
@@ -141,7 +141,7 @@ export default function ForgotPasswordPage() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="bg-primary hover:bg-primary-hover shadow-primary/25 hover:shadow-primary/40 h-12 w-full rounded-lg text-sm font-semibold text-white shadow-lg transition-all duration-300 disabled:opacity-50"
+          className="bg-primary hover:bg-primary/90 shadow-primary/25 hover:shadow-primary/40 h-12 w-full rounded-lg text-sm font-semibold text-primary-foreground shadow-lg transition-all duration-300 disabled:opacity-50"
         >
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isLoading ? 'Mengirim...' : 'Kirim Link Reset'}
@@ -149,10 +149,10 @@ export default function ForgotPasswordPage() {
       </form>
 
       {/* Back to Login Link */}
-      <p className="mt-8 text-center text-sm text-slate-600">
+      <p className="mt-8 text-center text-sm text-muted-foreground">
         <Link
           href="/login"
-          className="group text-primary hover:text-primary-hover inline-flex items-center gap-1 font-semibold transition-colors"
+          className="group text-primary hover:text-primary/80 inline-flex items-center gap-1 font-semibold transition-colors"
         >
           <ArrowLeft
             size={14}

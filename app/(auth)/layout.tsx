@@ -17,7 +17,7 @@ export default function AuthLayout({
   return (
     <div className="flex min-h-screen">
       {/* Left Side - Form Content */}
-      <div className="flex flex-1 items-center justify-center bg-white p-6 sm:p-8 lg:p-12">
+      <div className="flex flex-1 items-center justify-center bg-background p-6 sm:p-8 lg:p-12">
         <div className="w-full max-w-md">
           {/* Logo & Title */}
           <div className="mb-8">
@@ -25,7 +25,7 @@ export default function AuthLayout({
               href="/"
               className="group mb-6 inline-flex items-center gap-3"
             >
-              <div className="shadow-primary/5 relative flex h-11 w-11 items-center justify-center rounded-xl bg-white shadow-lg ring-1 ring-slate-200">
+              <div className="shadow-primary/5 relative flex h-11 w-11 items-center justify-center rounded-xl bg-card shadow-lg ring-1 ring-border">
                 <Image
                   src="/naiera.png"
                   alt="Naiera Logo"
@@ -34,10 +34,10 @@ export default function AuthLayout({
                 />
               </div>
               <div>
-                <h1 className="group-hover:text-primary text-lg font-bold text-slate-800 transition-colors">
+                <h1 className="group-hover:text-primary text-lg font-bold text-foreground transition-colors">
                   Super App Naiera
                 </h1>
-                <p className="text-xs text-slate-500">Kabupaten Naiera</p>
+                <p className="text-xs text-muted-foreground">Kabupaten Naiera</p>
               </div>
             </Link>
           </div>

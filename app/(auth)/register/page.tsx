@@ -97,10 +97,10 @@ export default function RegisterPage() {
   return (
     <>
       <div className="mb-6">
-        <h2 className="mb-2 text-2xl font-bold text-slate-800 sm:text-3xl">
+        <h2 className="mb-2 text-2xl font-bold text-foreground sm:text-3xl">
           Buat Akun Baru
         </h2>
-        <p className="text-sm text-slate-600 sm:text-base">
+        <p className="text-sm text-muted-foreground sm:text-base">
           Daftar untuk mengakses layanan digital Kabupaten Naiera
         </p>
       </div>
@@ -120,20 +120,20 @@ export default function RegisterPage() {
         <div>
           <label
             htmlFor="name"
-            className="mb-2 block text-sm font-medium text-slate-700"
+            className="mb-2 block text-sm font-medium text-foreground"
           >
             Nama Lengkap
           </label>
           <div className="relative">
             <User
               size={18}
-              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-muted-foreground"
             />
             <input
               type="text"
               id="name"
               placeholder="Masukkan nama lengkap"
-              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-4 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-input bg-card py-3 pr-4 pl-11 text-sm transition-all placeholder:text-muted-foreground focus:ring-2 focus:outline-none"
               {...form.register('name')}
             />
           </div>
@@ -148,19 +148,19 @@ export default function RegisterPage() {
         <div>
           <label
             htmlFor="username"
-            className="mb-2 block text-sm font-medium text-slate-700"
+            className="mb-2 block text-sm font-medium text-foreground"
           >
             Username
           </label>
           <div className="relative">
-            <span className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400">
+            <span className="absolute top-1/2 left-3.5 -translate-y-1/2 text-muted-foreground">
               @
             </span>
             <input
               type="text"
               id="username"
               placeholder="Masukkan username"
-              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-4 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-input bg-card py-3 pr-4 pl-11 text-sm transition-all placeholder:text-muted-foreground focus:ring-2 focus:outline-none"
               {...form.register('username')}
             />
           </div>
@@ -175,20 +175,20 @@ export default function RegisterPage() {
         <div>
           <label
             htmlFor="email"
-            className="mb-2 block text-sm font-medium text-slate-700"
+            className="mb-2 block text-sm font-medium text-foreground"
           >
             Email
           </label>
           <div className="relative">
             <Mail
               size={18}
-              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-muted-foreground"
             />
             <input
               type="email"
               id="email"
               placeholder="Masukkan email"
-              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-4 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-input bg-card py-3 pr-4 pl-11 text-sm transition-all placeholder:text-muted-foreground focus:ring-2 focus:outline-none"
               {...form.register('email')}
             />
           </div>
@@ -203,26 +203,26 @@ export default function RegisterPage() {
         <div>
           <label
             htmlFor="password"
-            className="mb-2 block text-sm font-medium text-slate-700"
+            className="mb-2 block text-sm font-medium text-foreground"
           >
             Password
           </label>
           <div className="relative">
             <Lock
               size={18}
-              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-muted-foreground"
             />
             <input
               type={showPassword ? 'text' : 'password'}
               id="password"
               placeholder="Masukkan password"
-              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-12 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-input bg-card py-3 pr-12 pl-11 text-sm transition-all placeholder:text-muted-foreground focus:ring-2 focus:outline-none"
               {...form.register('password')}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-1/2 right-3.5 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600"
+              className="absolute top-1/2 right-3.5 -translate-y-1/2 text-muted-foreground transition-colors hover:text-muted-foreground"
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -238,26 +238,26 @@ export default function RegisterPage() {
         <div>
           <label
             htmlFor="confirmPassword"
-            className="mb-2 block text-sm font-medium text-slate-700"
+            className="mb-2 block text-sm font-medium text-foreground"
           >
             Konfirmasi Password
           </label>
           <div className="relative">
             <Lock
               size={18}
-              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-muted-foreground"
             />
             <input
               type={showConfirmPassword ? 'text' : 'password'}
               id="confirmPassword"
               placeholder="Konfirmasi password"
-              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-12 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-input bg-card py-3 pr-12 pl-11 text-sm transition-all placeholder:text-muted-foreground focus:ring-2 focus:outline-none"
               {...form.register('confirmPassword')}
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute top-1/2 right-3.5 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600"
+              className="absolute top-1/2 right-3.5 -translate-y-1/2 text-muted-foreground transition-colors hover:text-muted-foreground"
             >
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -273,7 +273,7 @@ export default function RegisterPage() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="bg-primary hover:bg-primary-hover shadow-primary/25 hover:shadow-primary/40 h-12 w-full rounded-lg text-sm font-semibold text-white shadow-lg transition-all duration-300 disabled:opacity-50"
+          className="bg-primary hover:bg-primary/90 shadow-primary/25 hover:shadow-primary/40 h-12 w-full rounded-lg text-sm font-semibold text-primary-foreground shadow-lg transition-all duration-300 disabled:opacity-50"
         >
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isLoading ? 'Memproses...' : 'Daftar Sekarang'}
@@ -281,11 +281,11 @@ export default function RegisterPage() {
       </form>
 
       {/* Login Link */}
-      <p className="mt-8 text-center text-sm text-slate-600">
+      <p className="mt-8 text-center text-sm text-muted-foreground">
         Sudah punya akun?{' '}
         <Link
           href="/login"
-          className="group text-primary hover:text-primary-hover inline-flex items-center gap-1 font-semibold transition-colors"
+          className="group text-primary hover:text-primary/80 inline-flex items-center gap-1 font-semibold transition-colors"
         >
           <ArrowLeft
             size={14}
