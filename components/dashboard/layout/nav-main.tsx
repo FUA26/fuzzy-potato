@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { ChevronRight, type LucideIcon } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from '@/components/ui/collapsible'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu'
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -26,49 +26,49 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import Link from "next/link";
+} from '@/components/ui/sidebar'
+import Link from 'next/link'
 
 export function NavMain({
   items,
 }: {
   items: {
-    title: string;
-    url: string;
-    icon: LucideIcon;
-    isActive?: boolean;
+    title: string
+    url: string
+    icon: LucideIcon
+    isActive?: boolean
     items?: {
-      title: string;
-      url: string;
-    }[];
-  }[];
+      title: string
+      url: string
+    }[]
+  }[]
 }) {
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
-  const pathname = usePathname();
+  const { state } = useSidebar()
+  const isCollapsed = state === 'collapsed'
+  const pathname = usePathname()
 
   // Helper function to check if a URL is active
   const isUrlActive = (url: string) => {
-    if (url === "#") return false;
+    if (url === '#') return false
     // Exact match or starts with the URL (for nested routes)
-    return pathname === url || pathname.startsWith(url + "/");
-  };
+    return pathname === url || pathname.startsWith(url + '/')
+  }
 
   // Check if any sub-item is active
   const hasActiveSubItem = (subItems?: { title: string; url: string }[]) => {
-    if (!subItems) return false;
-    return subItems.some((subItem) => isUrlActive(subItem.url));
-  };
+    if (!subItems) return false
+    return subItems.some((subItem) => isUrlActive(subItem.url))
+  }
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
-          const hasSubItems = item.items && item.items.length > 0;
-          const isItemActive = isUrlActive(item.url);
-          const isSubActive = hasActiveSubItem(item.items);
-          const shouldBeOpen = isSubActive || item.isActive;
+          const hasSubItems = item.items && item.items.length > 0
+          const isItemActive = isUrlActive(item.url)
+          const isSubActive = hasActiveSubItem(item.items)
+          const shouldBeOpen = isSubActive || item.isActive
 
           // Menu without sub-items - just a direct link
           if (!hasSubItems) {
@@ -78,14 +78,16 @@ export function NavMain({
                   asChild
                   tooltip={item.title}
                   isActive={isItemActive}
+                  size="default"
+                  className="h-11 py-2.5 data-[active=true]:bg-primary/10 data-[active=true]:text-primary hover:bg-primary/5"
                 >
-                  <Link href={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
+                  <Link href={item.url} className="gap-3">
+                    <item.icon className="h-5 w-5" />
+                    <span className="text-sm font-semibold">{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-            );
+            )
           }
 
           // Menu with sub-items
@@ -99,9 +101,13 @@ export function NavMain({
                     <SidebarMenuButton
                       tooltip={item.title}
                       isActive={isSubActive}
+                      size="default"
+                      className="h-11 py-2.5 data-[active=true]:bg-primary/10 data-[active=true]:text-primary hover:bg-primary/5"
                     >
-                      <item.icon />
-                      <span>{item.title}</span>
+                      <item.icon className="h-5 w-5" />
+                      <span className="text-sm font-semibold">
+                        {item.title}
+                      </span>
                       <ChevronRight className="ml-auto h-4 w-4" />
                     </SidebarMenuButton>
                   </DropdownMenuTrigger>
@@ -113,27 +119,27 @@ export function NavMain({
                     <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {item.items?.map((subItem) => {
-                      const isSubItemActive = isUrlActive(subItem.url);
+                      const isSubItemActive = isUrlActive(subItem.url)
                       return (
                         <DropdownMenuItem
                           key={subItem.title}
                           asChild
                           className={
                             isSubItemActive
-                              ? "bg-accent text-accent-foreground"
-                              : ""
+                              ? 'bg-accent text-accent-foreground'
+                              : ''
                           }
                         >
                           <Link href={subItem.url} className="cursor-pointer">
                             {subItem.title}
                           </Link>
                         </DropdownMenuItem>
-                      );
+                      )
                     })}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </SidebarMenuItem>
-            );
+            )
           }
 
           // Expanded state with Collapsible
@@ -148,38 +154,42 @@ export function NavMain({
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton
                     tooltip={item.title}
-                    className="w-full"
+                    className="w-full h-11 py-2.5 data-[active=true]:bg-primary/10 data-[active=true]:text-primary hover:bg-primary/5"
                     isActive={isSubActive}
+                    size="default"
                   >
-                    <item.icon />
-                    <span>{item.title}</span>
+                    <item.icon className="h-5 w-5" />
+                    <span className="text-sm font-semibold">{item.title}</span>
                     <ChevronRight className="ml-auto h-4 w-4 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
                     {item.items?.map((subItem) => {
-                      const isSubItemActive = isUrlActive(subItem.url);
+                      const isSubItemActive = isUrlActive(subItem.url)
                       return (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton
                             asChild
                             isActive={isSubItemActive}
+                            className="h-10 py-2 data-[active=true]:bg-primary/10 data-[active=true]:text-primary hover:bg-primary/5"
                           >
                             <Link href={subItem.url}>
-                              <span>{subItem.title}</span>
+                              <span className="text-xs font-semibold">
+                                {subItem.title}
+                              </span>
                             </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
-                      );
+                      )
                     })}
                   </SidebarMenuSub>
                 </CollapsibleContent>
               </SidebarMenuItem>
             </Collapsible>
-          );
+          )
         })}
       </SidebarMenu>
     </SidebarGroup>
-  );
+  )
 }

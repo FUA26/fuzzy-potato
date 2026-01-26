@@ -75,7 +75,7 @@ export default function BackofficeLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="!mt-0 [&_main]:!mt-0">
         <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4 backdrop-blur">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
@@ -86,7 +86,9 @@ export default function BackofficeLayout({
             <HeaderUser user={userDisplay} />
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
+        <div className="flex flex-1 flex-col gap-4 bg-slate-50 p-4">
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )

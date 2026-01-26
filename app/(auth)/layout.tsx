@@ -27,7 +27,7 @@ export default function AuthLayout({
             >
               <div className="shadow-primary/5 relative flex h-11 w-11 items-center justify-center rounded-xl bg-card shadow-lg ring-1 ring-border">
                 <Image
-                  src="/naiera.png"
+                  src="/images/logo.png"
                   alt="Naiera Logo"
                   fill
                   className="object-contain p-1.5"
@@ -37,7 +37,9 @@ export default function AuthLayout({
                 <h1 className="group-hover:text-primary text-lg font-bold text-foreground transition-colors">
                   Super App Naiera
                 </h1>
-                <p className="text-xs text-muted-foreground">Kabupaten Naiera</p>
+                <p className="text-xs text-muted-foreground">
+                  Kabupaten Naiera
+                </p>
               </div>
             </Link>
           </div>

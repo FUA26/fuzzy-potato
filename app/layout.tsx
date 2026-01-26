@@ -13,6 +13,11 @@ export const metadata: Metadata = {
     default: 'Bandanaiera',
     template: '%s | Bandanaiera',
   },
+  icons: {
+    icon: '/images/logo.png',
+    shortcut: '/images/logo.png',
+    apple: '/images/logo.png',
+  },
   description:
     'A modern Next.js fullstack boilerplate with authentication, database, and RBAC built-in',
   keywords: [

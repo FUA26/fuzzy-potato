@@ -143,10 +143,12 @@ export default function ProfilePage() {
   }
 
   // Handle image update
-  const handleImageUpdate = () => {
+  const handleImageUpdate = async () => {
     const imageUrl = form.getValues('image')
     if (imageUrl) {
-      onSubmit({ image: imageUrl })
+      // Get all current form values
+      const formValues = form.getValues()
+      await onSubmit({ ...formValues, image: imageUrl })
     }
     setShowImageDialog(false)
   }
