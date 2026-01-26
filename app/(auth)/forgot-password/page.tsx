@@ -5,17 +5,14 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Loader2, CheckCircle2 } from 'lucide-react'
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle2,
+  Loader2,
+  Mail,
+} from 'lucide-react'
 import Link from 'next/link'
 
 const forgotPasswordSchema = z.object({
@@ -64,79 +61,106 @@ export default function ForgotPasswordPage() {
 
   if (success) {
     return (
-      <div className="container flex min-h-screen items-center justify-center py-24">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1">
-            <div className="flex justify-center">
-              <CheckCircle2 className="h-12 w-12 text-primary" />
-            </div>
-            <CardTitle className="text-2xl font-bold text-center">
-              Check your email
-            </CardTitle>
-            <CardDescription className="text-center">
-              We&apos;ve sent a password reset link to your email address
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Link href="/login" className="w-full">
-              <Button className="w-full" variant="outline">
-                Back to Login
-              </Button>
-            </Link>
-          </CardFooter>
-        </Card>
+      <div className="text-center">
+        <div className="mb-6 flex justify-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+            <CheckCircle2 className="h-8 w-8 text-primary" />
+          </div>
+        </div>
+        <h2 className="mb-2 text-2xl font-bold text-slate-800 sm:text-3xl">
+          Cek Email Anda
+        </h2>
+        <p className="mb-8 text-sm text-slate-600 sm:text-base">
+          Kami telah mengirimkan link reset password ke email Anda
+        </p>
+        <Link href="/login">
+          <Button
+            variant="outline"
+            className="h-12 w-full rounded-lg text-sm font-semibold"
+          >
+            <ArrowLeft size={16} className="mr-2" />
+            Kembali ke Login
+          </Button>
+        </Link>
       </div>
     )
   }
 
   return (
-    <div className="container flex min-h-screen items-center justify-center py-24">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Forgot Password?</CardTitle>
-          <CardDescription>
-            Enter your email address and we&apos;ll send you a link to reset
-            your password
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {error && (
-              <div className="rounded-lg bg-destructive/15 p-3 text-sm text-destructive">
-                {error}
-              </div>
-            )}
+    <>
+      <div className="mb-6">
+        <h2 className="mb-2 text-2xl font-bold text-slate-800 sm:text-3xl">
+          Lupa Password?
+        </h2>
+        <p className="text-sm text-slate-600 sm:text-base">
+          Masukkan email Anda dan kami akan mengirimkan link untuk reset
+          password
+        </p>
+      </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                {...form.register('email')}
-              />
-              {form.formState.errors.email && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.email.message}
-                </p>
-              )}
-            </div>
+      {error && (
+        <div className="mb-6">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        </div>
+      )}
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Send Reset Link
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter>
-          <Link
-            href="/login"
-            className="w-full text-center text-sm text-muted-foreground hover:text-primary"
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {/* Email Input */}
+        <div>
+          <label
+            htmlFor="email"
+            className="mb-2 block text-sm font-medium text-slate-700"
           >
-            Back to Login
-          </Link>
-        </CardFooter>
-      </Card>
-    </div>
+            Email
+          </label>
+          <div className="relative">
+            <Mail
+              size={18}
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              type="email"
+              id="email"
+              placeholder="Masukkan email Anda"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-4 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              {...form.register('email')}
+            />
+          </div>
+          {form.formState.errors.email && (
+            <p className="mt-1 text-sm text-destructive">
+              {form.formState.errors.email.message}
+            </p>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="bg-primary hover:bg-primary-hover shadow-primary/25 hover:shadow-primary/40 h-12 w-full rounded-lg text-sm font-semibold text-white shadow-lg transition-all duration-300 disabled:opacity-50"
+        >
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading ? 'Mengirim...' : 'Kirim Link Reset'}
+        </Button>
+      </form>
+
+      {/* Back to Login Link */}
+      <p className="mt-8 text-center text-sm text-slate-600">
+        <Link
+          href="/login"
+          className="group text-primary hover:text-primary-hover inline-flex items-center gap-1 font-semibold transition-colors"
+        >
+          <ArrowLeft
+            size={14}
+            className="transition-transform group-hover:-translate-x-1"
+          />
+          Kembali ke Login
+        </Link>
+      </p>
+    </>
   )
 }

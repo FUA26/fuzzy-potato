@@ -6,17 +6,16 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Loader2, CheckCircle2 } from 'lucide-react'
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+} from 'lucide-react'
 import Link from 'next/link'
 
 const resetPasswordSchema = z
@@ -44,6 +43,8 @@ function ResetPasswordForm() {
   const [error, setError] = useState<string>('')
   const [success, setSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
@@ -55,7 +56,7 @@ function ResetPasswordForm() {
 
   useEffect(() => {
     if (!token) {
-      setError('Invalid reset link. Please request a new one.')
+      setError('Link reset tidak valid. Silakan minta link baru.')
     }
   }, [token])
 
@@ -98,90 +99,155 @@ function ResetPasswordForm() {
 
   if (success) {
     return (
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <div className="flex justify-center">
-            <CheckCircle2 className="h-12 w-12 text-primary" />
+      <div className="text-center">
+        <div className="mb-6 flex justify-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+            <CheckCircle2 className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-bold text-center">
-            Password Reset Successful
-          </CardTitle>
-          <CardDescription className="text-center">
-            Your password has been reset. Redirecting to login...
-          </CardDescription>
-        </CardHeader>
-      </Card>
+        </div>
+        <h2 className="mb-2 text-2xl font-bold text-slate-800 sm:text-3xl">
+          Password Berhasil Direset
+        </h2>
+        <p className="mb-8 text-sm text-slate-600 sm:text-base">
+          Password Anda telah diperbarui. Mengalihkan ke halaman login...
+        </p>
+        <div className="flex justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
+      </div>
     )
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
-        <CardDescription>Enter your new password below</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {error && (
-            <div className="rounded-lg bg-destructive/15 p-3 text-sm text-destructive">
-              {error}
-            </div>
-          )}
+    <>
+      <div className="mb-6">
+        <h2 className="mb-2 text-2xl font-bold text-slate-800 sm:text-3xl">
+          Reset Password
+        </h2>
+        <p className="text-sm text-slate-600 sm:text-base">
+          Masukkan password baru Anda
+        </p>
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">New Password</Label>
-            <Input
+      {error && (
+        <div className="mb-6">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        </div>
+      )}
+
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {/* Password Input */}
+        <div>
+          <label
+            htmlFor="password"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Password Baru
+          </label>
+          <div className="relative">
+            <Lock
+              size={18}
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              type={showPassword ? 'text' : 'password'}
               id="password"
-              type="password"
-              placeholder="••••••••"
+              placeholder="Masukkan password baru"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-12 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
               {...form.register('password')}
             />
-            {form.formState.errors.password && (
-              <p className="text-sm text-destructive">
-                {form.formState.errors.password.message}
-              </p>
-            )}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-1/2 right-3.5 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
+          {form.formState.errors.password && (
+            <p className="mt-1 text-sm text-destructive">
+              {form.formState.errors.password.message}
+            </p>
+          )}
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm New Password</Label>
-            <Input
+        {/* Confirm Password Input */}
+        <div>
+          <label
+            htmlFor="confirmPassword"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Konfirmasi Password Baru
+          </label>
+          <div className="relative">
+            <Lock
+              size={18}
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              type={showConfirmPassword ? 'text' : 'password'}
               id="confirmPassword"
-              type="password"
-              placeholder="••••••••"
+              placeholder="Konfirmasi password baru"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-12 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
               {...form.register('confirmPassword')}
             />
-            {form.formState.errors.confirmPassword && (
-              <p className="text-sm text-destructive">
-                {form.formState.errors.confirmPassword.message}
-              </p>
-            )}
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute top-1/2 right-3.5 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600"
+            >
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
+          {form.formState.errors.confirmPassword && (
+            <p className="mt-1 text-sm text-destructive">
+              {form.formState.errors.confirmPassword.message}
+            </p>
+          )}
+        </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Reset Password
-          </Button>
-        </form>
-      </CardContent>
-      <CardFooter>
+        {/* Submit Button */}
+        <Button
+          type="submit"
+          disabled={isLoading || !token}
+          className="bg-primary hover:bg-primary-hover shadow-primary/25 hover:shadow-primary/40 h-12 w-full rounded-lg text-sm font-semibold text-white shadow-lg transition-all duration-300 disabled:opacity-50"
+        >
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading ? 'Memproses...' : 'Reset Password'}
+        </Button>
+      </form>
+
+      {/* Back to Login Link */}
+      <p className="mt-8 text-center text-sm text-slate-600">
         <Link
           href="/login"
-          className="w-full text-center text-sm text-muted-foreground hover:text-primary"
+          className="group text-primary hover:text-primary-hover inline-flex items-center gap-1 font-semibold transition-colors"
         >
-          Back to Login
+          <ArrowLeft
+            size={14}
+            className="transition-transform group-hover:-translate-x-1"
+          />
+          Kembali ke Login
         </Link>
-      </CardFooter>
-    </Card>
+      </p>
+    </>
   )
 }
 
 export default function ResetPasswordPage() {
   return (
-    <div className="container flex min-h-screen items-center justify-center py-24">
-      <Suspense fallback={<div>Loading...</div>}>
-        <ResetPasswordForm />
-      </Suspense>
-    </div>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <ResetPasswordForm />
+    </Suspense>
   )
 }

@@ -1,32 +1,74 @@
-import type { Metadata } from "next";
-import { AppSidebar } from "@/components/dashboard/layout/app-sidebar";
-import { HeaderNotifications } from "@/components/dashboard/layout/header-notifications";
-import { HeaderUser } from "@/components/dashboard/layout/header-user";
+'use client'
+
+import { useEffect, useState } from 'react'
+import { AppSidebar } from '@/components/dashboard/layout/app-sidebar'
+import { HeaderNotifications } from '@/components/dashboard/layout/header-notifications'
+import { HeaderUser } from '@/components/dashboard/layout/header-user'
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar'
+import { Loader2 } from 'lucide-react'
 
-export const metadata: Metadata = {
-  title: "Backoffice - Super App Naiera",
-  description: "Dashboard internal untuk pengelolaan layanan digital Kabupaten Naiera",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+interface User {
+  id: string
+  name: string
+  email: string
+  avatar?: string
+}
 
 export default function BackofficeLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const user = {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  };
+  const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include',
+        })
+
+        if (!response.ok) {
+          // Not authenticated, redirect to login
+          window.location.href = '/login'
+          return
+        }
+
+        const data = await response.json()
+        setUser(data.user)
+      } catch (error) {
+        console.error('Failed to fetch user:', error)
+        window.location.href = '/login'
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchUser()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (!user) {
+    return null
+  }
+
+  const userDisplay = {
+    name: user.name || user.email.split('@')[0],
+    email: user.email,
+    avatar: user.avatar || '',
+  }
 
   return (
     <SidebarProvider>
@@ -39,11 +81,11 @@ export default function BackofficeLayout({
           </div>
           <div className="flex items-center gap-2">
             <HeaderNotifications />
-            <HeaderUser user={user} />
+            <HeaderUser user={userDisplay} />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
       </SidebarInset>
     </SidebarProvider>
-  );
+  )
 }

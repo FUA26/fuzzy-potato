@@ -7,17 +7,17 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Loader2 } from 'lucide-react'
+  AlertCircle,
+  ArrowLeft,
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+  Mail,
+  User,
+} from 'lucide-react'
 
 const registerSchema = z
   .object({
@@ -49,6 +49,8 @@ export default function RegisterPage() {
   const router = useRouter()
   const [error, setError] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -93,112 +95,205 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="container flex min-h-screen items-center justify-center py-24">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">
-            Create an account
-          </CardTitle>
-          <CardDescription>
-            Enter your information to create your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {error && (
-              <div className="rounded-lg bg-destructive/15 p-3 text-sm text-destructive">
-                {error}
-              </div>
-            )}
+    <>
+      <div className="mb-6">
+        <h2 className="mb-2 text-2xl font-bold text-slate-800 sm:text-3xl">
+          Buat Akun Baru
+        </h2>
+        <p className="text-sm text-slate-600 sm:text-base">
+          Daftar untuk mengakses layanan digital Kabupaten Naiera
+        </p>
+      </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                placeholder="John Doe"
-                {...form.register('name')}
-              />
-              {form.formState.errors.name && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.name.message}
-                </p>
-              )}
-            </div>
+      {error && (
+        <div className="mb-6">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        </div>
+      )}
 
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                placeholder="johndoe"
-                {...form.register('username')}
-              />
-              {form.formState.errors.username && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.username.message}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                {...form.register('email')}
-              />
-              {form.formState.errors.email && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.email.message}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                {...form.register('password')}
-              />
-              {form.formState.errors.password && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.password.message}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                {...form.register('confirmPassword')}
-              />
-              {form.formState.errors.confirmPassword && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.confirmPassword.message}
-                </p>
-              )}
-            </div>
-
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Account
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter>
-          <div className="text-sm text-muted-foreground">
-            Already have an account?{' '}
-            <Link href="/login" className="text-primary hover:underline">
-              Sign in
-            </Link>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* Name Input */}
+        <div>
+          <label
+            htmlFor="name"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Nama Lengkap
+          </label>
+          <div className="relative">
+            <User
+              size={18}
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              type="text"
+              id="name"
+              placeholder="Masukkan nama lengkap"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-4 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              {...form.register('name')}
+            />
           </div>
-        </CardFooter>
-      </Card>
-    </div>
+          {form.formState.errors.name && (
+            <p className="mt-1 text-sm text-destructive">
+              {form.formState.errors.name.message}
+            </p>
+          )}
+        </div>
+
+        {/* Username Input */}
+        <div>
+          <label
+            htmlFor="username"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Username
+          </label>
+          <div className="relative">
+            <span className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400">
+              @
+            </span>
+            <input
+              type="text"
+              id="username"
+              placeholder="Masukkan username"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-4 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              {...form.register('username')}
+            />
+          </div>
+          {form.formState.errors.username && (
+            <p className="mt-1 text-sm text-destructive">
+              {form.formState.errors.username.message}
+            </p>
+          )}
+        </div>
+
+        {/* Email Input */}
+        <div>
+          <label
+            htmlFor="email"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Email
+          </label>
+          <div className="relative">
+            <Mail
+              size={18}
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              type="email"
+              id="email"
+              placeholder="Masukkan email"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-4 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              {...form.register('email')}
+            />
+          </div>
+          {form.formState.errors.email && (
+            <p className="mt-1 text-sm text-destructive">
+              {form.formState.errors.email.message}
+            </p>
+          )}
+        </div>
+
+        {/* Password Input */}
+        <div>
+          <label
+            htmlFor="password"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Password
+          </label>
+          <div className="relative">
+            <Lock
+              size={18}
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              type={showPassword ? 'text' : 'password'}
+              id="password"
+              placeholder="Masukkan password"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-12 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              {...form.register('password')}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-1/2 right-3.5 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+          {form.formState.errors.password && (
+            <p className="mt-1 text-sm text-destructive">
+              {form.formState.errors.password.message}
+            </p>
+          )}
+        </div>
+
+        {/* Confirm Password Input */}
+        <div>
+          <label
+            htmlFor="confirmPassword"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Konfirmasi Password
+          </label>
+          <div className="relative">
+            <Lock
+              size={18}
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              type={showConfirmPassword ? 'text' : 'password'}
+              id="confirmPassword"
+              placeholder="Konfirmasi password"
+              className="focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-slate-300 bg-white py-3 pr-12 pl-11 text-sm transition-all placeholder:text-slate-400 focus:ring-2 focus:outline-none"
+              {...form.register('confirmPassword')}
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute top-1/2 right-3.5 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600"
+            >
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+          {form.formState.errors.confirmPassword && (
+            <p className="mt-1 text-sm text-destructive">
+              {form.formState.errors.confirmPassword.message}
+            </p>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="bg-primary hover:bg-primary-hover shadow-primary/25 hover:shadow-primary/40 h-12 w-full rounded-lg text-sm font-semibold text-white shadow-lg transition-all duration-300 disabled:opacity-50"
+        >
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading ? 'Memproses...' : 'Daftar Sekarang'}
+        </Button>
+      </form>
+
+      {/* Login Link */}
+      <p className="mt-8 text-center text-sm text-slate-600">
+        Sudah punya akun?{' '}
+        <Link
+          href="/login"
+          className="group text-primary hover:text-primary-hover inline-flex items-center gap-1 font-semibold transition-colors"
+        >
+          <ArrowLeft
+            size={14}
+            className="transition-transform group-hover:-translate-x-1"
+          />
+          Masuk
+        </Link>
+      </p>
+    </>
   )
 }
