@@ -15,6 +15,13 @@
       "when": 1769157740744,
       "tag": "0001_pretty_spyke",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1769391985391,
+      "tag": "0002_shiny_master_mold",
+      "breakpoints": true
     }
   ]
 }

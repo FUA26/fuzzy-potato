@@ -365,7 +365,7 @@ export default function RolesPage() {
 
   useEffect(() => {
     fetchRoles()
-  }, [])
+  }, [fetchRoles])
 
   const onSubmit = async (values: RoleFormValues) => {
     setIsSubmitting(true)

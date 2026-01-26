@@ -16,6 +16,12 @@ const eslintConfig = defineConfig([
     'build/**',
     'next-env.d.ts',
   ]),
+  {
+    rules: {
+      // Disable incompatible-library rule (false positive with TanStack Table)
+      'react-hooks/incompatible-library': 'off',
+    },
+  },
 ])
 
 export default eslintConfig
