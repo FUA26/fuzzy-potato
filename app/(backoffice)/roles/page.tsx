@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -65,6 +65,8 @@ export default function RolesPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editingRole, setEditingRole] = useState<Role | null>(null)
 
+  const mountedRef = useRef(true)
+
   const form = useForm<RoleFormValues>({
     resolver: zodResolver(roleSchema),
     defaultValues: {
@@ -80,12 +82,19 @@ export default function RolesPage() {
       const response = await fetch('/api/admin/roles')
       if (!response.ok) throw new Error('Failed to fetch roles')
       const result = await response.json()
-      setData(result.roles)
+
+      if (mountedRef.current) {
+        setData(result.roles)
+      }
     } catch (error) {
-      console.error('Error fetching roles:', error)
-      toast.error('Failed to load roles')
+      if (mountedRef.current) {
+        console.error('Error fetching roles:', error)
+        toast.error('Failed to load roles')
+      }
     } finally {
-      setIsLoading(false)
+      if (mountedRef.current) {
+        setIsLoading(false)
+      }
     }
   }, [])
 
@@ -95,18 +104,29 @@ export default function RolesPage() {
       const response = await fetch('/api/admin/permissions')
       if (!response.ok) throw new Error('Failed to fetch permissions')
       const result = await response.json()
-      setPermissions(result.permissions)
+
+      if (mountedRef.current) {
+        setPermissions(result.permissions)
+      }
     } catch (error) {
-      console.error('Error fetching permissions:', error)
-      toast.error('Failed to load permissions')
+      if (mountedRef.current) {
+        console.error('Error fetching permissions:', error)
+        toast.error('Failed to load permissions')
+      }
     }
   }, [])
 
-  // Initial fetch
+  // Initial fetch and cleanup
   useEffect(() => {
+    mountedRef.current = true
     fetchRoles()
     fetchPermissions()
-  }, [fetchRoles, fetchPermissions])
+
+    return () => {
+      mountedRef.current = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Handle edit
   const handleEdit = useCallback(

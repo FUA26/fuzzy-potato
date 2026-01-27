@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -69,11 +69,18 @@ const permissionSchema = z.object({
 
 type PermissionFormValues = z.infer<typeof permissionSchema>
 
-const resources = ['users', 'posts', 'roles', 'permissions', 'settings']
+interface Resource {
+  id: string
+  name: string
+  identifier: string
+  description: string | null
+}
+
 const actions = ['create', 'read', 'update', 'delete', 'manage']
 
 export default function PermissionsPage() {
   const [data, setData] = useState<Permission[]>([])
+  const [resources, setResources] = useState<Resource[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -81,6 +88,8 @@ export default function PermissionsPage() {
   const [editingPermission, setEditingPermission] = useState<Permission | null>(
     null
   )
+
+  const mountedRef = useRef(true)
 
   const form = useForm<PermissionFormValues>({
     resolver: zodResolver(permissionSchema),
@@ -99,19 +108,51 @@ export default function PermissionsPage() {
       const response = await fetch('/api/admin/permissions')
       if (!response.ok) throw new Error('Failed to fetch permissions')
       const result = await response.json()
-      setData(result.permissions)
+
+      if (mountedRef.current) {
+        setData(result.permissions)
+      }
     } catch (error) {
-      console.error('Error fetching permissions:', error)
-      toast.error('Failed to load permissions')
+      if (mountedRef.current) {
+        console.error('Error fetching permissions:', error)
+        toast.error('Failed to load permissions')
+      }
     } finally {
-      setIsLoading(false)
+      if (mountedRef.current) {
+        setIsLoading(false)
+      }
     }
   }, [])
 
-  // Initial fetch
+  // Fetch resources
+  const fetchResources = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/resources')
+      if (!response.ok) throw new Error('Failed to fetch resources')
+      const result = await response.json()
+
+      if (mountedRef.current) {
+        setResources(result.resources)
+      }
+    } catch (error) {
+      if (mountedRef.current) {
+        console.error('Error fetching resources:', error)
+        toast.error('Failed to load resources')
+      }
+    }
+  }, [])
+
+  // Initial fetch and cleanup
   useEffect(() => {
+    mountedRef.current = true
     fetchPermissions()
-  }, [fetchPermissions])
+    fetchResources()
+
+    return () => {
+      mountedRef.current = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Handle edit
   const handleEdit = useCallback(
@@ -435,8 +476,11 @@ export default function PermissionsPage() {
                               </FormControl>
                               <SelectContent>
                                 {resources.map((resource) => (
-                                  <SelectItem key={resource} value={resource}>
-                                    {resource}
+                                  <SelectItem
+                                    key={resource.identifier}
+                                    value={resource.identifier}
+                                  >
+                                    {resource.name} ({resource.identifier})
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -579,8 +623,11 @@ export default function PermissionsPage() {
                               </FormControl>
                               <SelectContent>
                                 {resources.map((resource) => (
-                                  <SelectItem key={resource} value={resource}>
-                                    {resource}
+                                  <SelectItem
+                                    key={resource.identifier}
+                                    value={resource.identifier}
+                                  >
+                                    {resource.name} ({resource.identifier})
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -708,8 +755,8 @@ export default function PermissionsPage() {
                 columnId: 'resource',
                 title: 'Resource',
                 options: resources.map((resource) => ({
-                  label: resource.charAt(0).toUpperCase() + resource.slice(1),
-                  value: resource,
+                  label: resource.name,
+                  value: resource.identifier,
                 })),
               },
               {

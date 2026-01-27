@@ -6,6 +6,8 @@ export interface TokenPayload extends JWTPayload {
   userId: string
   email: string
   name?: string
+  permissions?: string[]
+  roles?: string[]
 }
 
 /**
@@ -58,7 +60,9 @@ export function generateRandomToken(): string {
     cryptoModule.randomFillSync(array)
   }
 
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('')
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join(
+    ''
+  )
 }
 
 /**

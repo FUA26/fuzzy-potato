@@ -31,21 +31,34 @@ import Link from 'next/link'
 
 export function NavMain({
   items,
+  userPermissions = [],
 }: {
   items: {
     title: string
     url: string
     icon: LucideIcon
     isActive?: boolean
+    requiredPermission?: string
     items?: {
       title: string
       url: string
+      requiredPermission?: string
     }[]
   }[]
+  userPermissions?: string[]
 }) {
   const { state } = useSidebar()
   const isCollapsed = state === 'collapsed'
   const pathname = usePathname()
+
+  // Check if user has wildcard permission (all permissions)
+  const hasWildcard = userPermissions.includes('*')
+
+  // Helper function to check if user has a specific permission
+  const hasPermission = (permission?: string) => {
+    if (!permission) return true
+    return hasWildcard || userPermissions.includes(permission)
+  }
 
   // Helper function to check if a URL is active
   const isUrlActive = (url: string) => {
@@ -55,16 +68,32 @@ export function NavMain({
   }
 
   // Check if any sub-item is active
-  const hasActiveSubItem = (subItems?: { title: string; url: string }[]) => {
+  const hasActiveSubItem = (
+    subItems?: { title: string; url: string; requiredPermission?: string }[]
+  ) => {
     if (!subItems) return false
-    return subItems.some((subItem) => isUrlActive(subItem.url))
+    return subItems.some(
+      (subItem) =>
+        hasPermission(subItem.requiredPermission) && isUrlActive(subItem.url)
+    )
   }
+
+  // Filter items based on permissions
+  const filteredItems = items
+    .filter((item) => hasPermission(item.requiredPermission))
+    .map((item) => ({
+      ...item,
+      items: item.items?.filter((subItem) =>
+        hasPermission(subItem.requiredPermission)
+      ),
+    }))
+    .filter((item) => !item.items || item.items.length > 0) // Remove items with no visible sub-items
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => {
+        {filteredItems.map((item) => {
           const hasSubItems = item.items && item.items.length > 0
           const isItemActive = isUrlActive(item.url)
           const isSubActive = hasActiveSubItem(item.items)

@@ -12,6 +12,7 @@ import {
   ListTodo,
   Users,
   Briefcase,
+  Database,
 } from 'lucide-react'
 
 import {
@@ -34,23 +35,28 @@ const data = {
       url: '/dashboard',
       icon: LayoutDashboard,
       isActive: true,
+      requiredPermission: 'dashboard.view',
     },
     {
       title: 'Task Management',
       url: '#',
       icon: ListTodo,
+      requiredPermission: 'tasks.read',
       items: [
         {
           title: 'All Tasks',
           url: '/tasks',
+          requiredPermission: 'tasks.read',
         },
         {
           title: 'My Tasks',
           url: '/tasks/my',
+          requiredPermission: 'tasks.read',
         },
         {
           title: 'Kanban Board',
           url: '/tasks/kanban',
+          requiredPermission: 'tasks.read',
         },
       ],
     },
@@ -58,14 +64,17 @@ const data = {
       title: 'Projects',
       url: '#',
       icon: Briefcase,
+      requiredPermission: 'projects.read',
       items: [
         {
           title: 'All Projects',
           url: '/projects',
+          requiredPermission: 'projects.read',
         },
         {
           title: 'Active Projects',
           url: '/projects/active',
+          requiredPermission: 'projects.read',
         },
       ],
     },
@@ -73,33 +82,46 @@ const data = {
       title: 'User Management',
       url: '#',
       icon: Users,
+      requiredPermission: 'users.read',
       items: [
         {
           title: 'Users',
           url: '/users',
+          requiredPermission: 'users.read',
         },
         {
           title: 'Roles',
           url: '/roles',
+          requiredPermission: 'roles.read',
         },
         {
           title: 'Permissions',
           url: '/permissions',
+          requiredPermission: 'permissions.read',
         },
       ],
+    },
+    {
+      title: 'Resources',
+      url: '/resources',
+      icon: Database,
+      requiredPermission: 'resources.read',
     },
     {
       title: 'Settings',
       url: '#',
       icon: Settings2,
+      requiredPermission: 'settings.manage',
       items: [
         {
           title: 'General',
           url: '/settings',
+          requiredPermission: 'settings.manage',
         },
         {
           title: 'Security',
           url: '/settings/security',
+          requiredPermission: 'settings.security',
         },
       ],
     },
@@ -135,13 +157,18 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ..._props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  userPermissions = [],
+  ...props
+}: React.ComponentProps<typeof Sidebar> & {
+  userPermissions?: string[]
+}) {
   return (
     <Sidebar
       variant="inset"
       collapsible="icon"
       className="bg-background border-r border-border"
-      {..._props}
+      {...props}
     >
       <SidebarHeader className="bg-background px-3 py-3">
         <SidebarMenu>
@@ -173,7 +200,7 @@ export function AppSidebar({ ..._props }: React.ComponentProps<typeof Sidebar>) 
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="bg-background">
-        <NavMain items={data.navMain} />
+        <NavMain items={data.navMain} userPermissions={userPermissions} />
         <NavProjects projects={data.projects} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
