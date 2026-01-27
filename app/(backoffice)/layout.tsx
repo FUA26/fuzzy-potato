@@ -17,6 +17,8 @@ interface User {
   email: string
   username?: string | null
   avatar?: string
+  permissions?: string[]
+  roles?: Array<{ id: string; name: string; isSystem: boolean }>
 }
 
 export default function BackofficeLayout({
@@ -74,7 +76,7 @@ export default function BackofficeLayout({
 
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar userPermissions={user.permissions || []} />
       <SidebarInset className="!mt-0 [&_main]:!mt-0">
         <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4 backdrop-blur">
           <div className="flex items-center gap-2">

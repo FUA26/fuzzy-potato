@@ -5,6 +5,8 @@ export interface TokenPayload extends JWTPayload {
   userId: string
   email: string
   name?: string
+  permissions?: string[]
+  roles?: string[]
 }
 
 /**

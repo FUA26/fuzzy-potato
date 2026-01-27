@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { toast } from 'sonner'
-import { Plus, Trash2, X } from 'lucide-react'
+import { Plus, Trash2, X, Shield, Loader2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -34,8 +34,10 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 import { DataTable, type User } from '@/components/data-table'
-import { getUsersColumns } from '@/components/data-table/columns/users'
+import { getUsersColumns, type UserRole } from '@/components/data-table/columns/users'
 import {
   ActionBar,
   ActionBarSelection,
@@ -72,8 +74,13 @@ export default function UsersPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isManageRolesDialogOpen, setIsManageRolesDialogOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [managingRolesUser, setManagingRolesUser] = useState<User | null>(null)
+  const [allRoles, setAllRoles] = useState<UserRole[]>([])
+  const [userRoles, setUserRoles] = useState<UserRole[]>([])
+  const [isLoadingRoles, setIsLoadingRoles] = useState(false)
 
   const mountedRef = useRef(true)
 
@@ -118,10 +125,52 @@ export default function UsersPage() {
     }
   }, [])
 
+  // Fetch all available roles
+  const fetchAllRoles = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/roles')
+      if (!response.ok) throw new Error('Failed to fetch roles')
+      const result = await response.json()
+
+      if (mountedRef.current) {
+        setAllRoles(result.roles)
+      }
+    } catch (error) {
+      if (mountedRef.current) {
+        console.error('Error fetching roles:', error)
+        toast.error('Failed to load roles')
+      }
+    }
+  }, [])
+
+  // Fetch user's roles
+  const fetchUserRoles = useCallback(async (userId: string) => {
+    setIsLoadingRoles(true)
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/roles`)
+      if (!response.ok) throw new Error('Failed to fetch user roles')
+      const result = await response.json()
+
+      if (mountedRef.current) {
+        setUserRoles(result.roles)
+      }
+    } catch (error) {
+      if (mountedRef.current) {
+        console.error('Error fetching user roles:', error)
+        toast.error('Failed to load user roles')
+      }
+    } finally {
+      if (mountedRef.current) {
+        setIsLoadingRoles(false)
+      }
+    }
+  }, [])
+
   // Initial fetch and cleanup
   useEffect(() => {
     mountedRef.current = true
     fetchUsers()
+    fetchAllRoles()
 
     return () => {
       mountedRef.current = false
@@ -225,12 +274,77 @@ export default function UsersPage() {
       .catch(() => toast.error('Failed to copy user ID'))
   }, [])
 
+  // Handle manage roles
+  const handleManageRoles = useCallback(
+    async (user: User) => {
+      setManagingRolesUser(user)
+      setIsManageRolesDialogOpen(true)
+      await fetchUserRoles(user.id)
+    },
+    [fetchUserRoles]
+  )
+
+  // Handle toggle role
+  const handleToggleRole = useCallback(
+    async (role: UserRole, isChecked: boolean) => {
+      if (!managingRolesUser) return
+
+      try {
+        if (isChecked) {
+          // Assign role to user
+          const response = await fetch(
+            `/api/admin/users/${managingRolesUser.id}/roles`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ roleId: role.id }),
+            }
+          )
+
+          if (!response.ok) {
+            const error = await response.json()
+            throw new Error(error.error || 'Failed to assign role')
+          }
+
+          toast.success(`Role "${role.name}" assigned to user`)
+          setUserRoles((prev) => [...prev, role])
+        } else {
+          // Remove role from user
+          const response = await fetch(
+            `/api/admin/users/${managingRolesUser.id}/roles?roleId=${role.id}`,
+            {
+              method: 'DELETE',
+            }
+          )
+
+          if (!response.ok) {
+            const error = await response.json()
+            throw new Error(error.error || 'Failed to remove role')
+          }
+
+          toast.success(`Role "${role.name}" removed from user`)
+          setUserRoles((prev) => prev.filter((r) => r.id !== role.id))
+        }
+
+        // Refresh users to update the table
+        fetchUsers()
+      } catch (error) {
+        console.error('Error toggling role:', error)
+        toast.error(
+          error instanceof Error ? error.message : 'Failed to update role'
+        )
+      }
+    },
+    [managingRolesUser, fetchUsers]
+  )
+
   // Create columns
   const columns = getUsersColumns({
     onEdit: handleEdit,
     onDelete: handleDelete,
     onCopy: handleCopy,
     onResetPassword: handleResetPassword,
+    onManageRoles: handleManageRoles,
   })
 
   // Handle submit
@@ -566,6 +680,97 @@ export default function UsersPage() {
                     </DialogFooter>
                   </form>
                 </Form>
+              </DialogContent>
+            </Dialog>
+
+            {/* Manage Roles Dialog */}
+            <Dialog
+              open={isManageRolesDialogOpen}
+              onOpenChange={(open) => {
+                setIsManageRolesDialogOpen(open)
+                if (!open) {
+                  setManagingRolesUser(null)
+                  setUserRoles([])
+                }
+              }}
+            >
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5" />
+                    Manage User Roles
+                  </DialogTitle>
+                  <DialogDescription>
+                    Assign or remove roles for{' '}
+                    {managingRolesUser?.name || managingRolesUser?.email}
+                  </DialogDescription>
+                </DialogHeader>
+
+                {isLoadingRoles ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="space-y-4 py-4">
+                    {allRoles.length === 0 ? (
+                      <div className="text-center text-sm text-muted-foreground py-4">
+                        No roles available. Please create roles first.
+                      </div>
+                    ) : (
+                      allRoles.map((role) => {
+                        const hasRole = userRoles.some((r) => r.id === role.id)
+                        return (
+                          <div
+                            key={role.id}
+                            className="flex items-center justify-between space-x-2 rounded-lg border p-3 hover:bg-accent/50 transition-colors"
+                          >
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <Label
+                                  htmlFor={`role-${role.id}`}
+                                  className="font-medium cursor-pointer"
+                                >
+                                  {role.name}
+                                </Label>
+                                {role.isSystem && (
+                                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                                    System
+                                  </span>
+                                )}
+                              </div>
+                              {role.description && (
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {role.description}
+                                </p>
+                              )}
+                            </div>
+                            <Checkbox
+                              id={`role-${role.id}`}
+                              checked={hasRole}
+                              onCheckedChange={(checked) =>
+                                handleToggleRole(role, checked as boolean)
+                              }
+                            />
+                          </div>
+                        )
+                      })
+                    )}
+                  </div>
+                )}
+
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setIsManageRolesDialogOpen(false)
+                      setManagingRolesUser(null)
+                      setUserRoles([])
+                    }}
+                  >
+                    Close
+                  </Button>
+                </DialogFooter>
               </DialogContent>
             </Dialog>
           </div>

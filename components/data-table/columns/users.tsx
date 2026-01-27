@@ -11,9 +11,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Edit, MoreHorizontal, Trash2, Copy, KeyRound } from 'lucide-react'
+import { Edit, MoreHorizontal, Trash2, Copy, KeyRound, Shield } from 'lucide-react'
 import { ColumnDef } from '@tanstack/react-table'
 import { DataTableColumnHeader } from '../column-header'
+
+export interface UserRole {
+  id: string
+  name: string
+  description: string | null
+  isSystem: boolean
+}
 
 export interface User {
   id: string
@@ -24,6 +31,7 @@ export interface User {
   emailVerified: Date | null
   createdAt: Date
   updatedAt: Date
+  roles?: UserRole[]
 }
 
 interface GetUsersColumnsParams {
@@ -31,6 +39,7 @@ interface GetUsersColumnsParams {
   onDelete: (user: User) => void
   onCopy: (id: string) => void
   onResetPassword: (user: User) => void
+  onManageRoles?: (user: User) => void
 }
 
 export function getUsersColumns({
@@ -38,6 +47,7 @@ export function getUsersColumns({
   onDelete,
   onCopy,
   onResetPassword,
+  onManageRoles,
 }: GetUsersColumnsParams): ColumnDef<User>[] {
   return [
     {
@@ -126,6 +136,32 @@ export function getUsersColumns({
       },
     },
     {
+      accessorKey: 'roles',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Roles" />
+      ),
+      cell: ({ row }) => {
+        const userRoles = row.getValue('roles') as UserRole[] | undefined
+        return (
+          <div className="flex flex-wrap gap-1">
+            {userRoles && userRoles.length > 0 ? (
+              userRoles.map((role) => (
+                <Badge
+                  key={role.id}
+                  variant={role.isSystem ? 'default' : 'secondary'}
+                  className="text-xs"
+                >
+                  {role.name}
+                </Badge>
+              ))
+            ) : (
+              <span className="text-sm text-muted-foreground">No roles</span>
+            )}
+          </div>
+        )
+      },
+    },
+    {
       accessorKey: 'createdAt',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Created" />
@@ -163,6 +199,15 @@ export function getUsersColumns({
                 <KeyRound className="mr-2 h-4 w-4" />
                 Send Reset Password Link
               </DropdownMenuItem>
+              {onManageRoles && (
+                <>
+                  <DropdownMenuItem onClick={() => onManageRoles(user)}>
+                    <Shield className="mr-2 h-4 w-4" />
+                    Manage Roles
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"

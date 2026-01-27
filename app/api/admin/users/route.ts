@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
-import { users } from '@/db/schema'
+import { users, userRoles, roles } from '@/db/schema'
 import { eq, like, or } from 'drizzle-orm'
 import { verifyToken, hashPassword } from '@/lib/auth'
 
@@ -39,7 +39,28 @@ export async function GET(req: NextRequest) {
       usersList = await db.select().from(users).orderBy(users.createdAt)
     }
 
-    return NextResponse.json({ users: usersList })
+    // Fetch roles for each user
+    const usersWithRoles = await Promise.all(
+      usersList.map(async (user) => {
+        const userRolesData = await db
+          .select({
+            id: roles.id,
+            name: roles.name,
+            description: roles.description,
+            isSystem: roles.isSystem,
+          })
+          .from(userRoles)
+          .innerJoin(roles, eq(userRoles.roleId, roles.id))
+          .where(eq(userRoles.userId, user.id))
+
+        return {
+          ...user,
+          roles: userRolesData,
+        }
+      })
+    )
+
+    return NextResponse.json({ users: usersWithRoles })
   } catch (error) {
     console.error('Get users error:', error)
     return NextResponse.json(

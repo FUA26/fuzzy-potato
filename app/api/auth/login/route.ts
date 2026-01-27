@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { users } from '@/db/schema'
-import { verifyPassword, signToken } from '@/lib/auth'
+import { verifyPassword, signToken, getUserPermissions, getUserRoles } from '@/lib/auth'
 import { eq, or } from 'drizzle-orm'
 
 /**
@@ -95,11 +95,21 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Generate JWT token
+    // Get user permissions and roles
+    const [userPermissions, userRolesData] = await Promise.all([
+      getUserPermissions(user.id),
+      getUserRoles(user.id),
+    ])
+
+    const roleNames = userRolesData.map((r) => r.name)
+
+    // Generate JWT token with permissions and roles
     const token = await signToken({
       userId: user.id,
       email: user.email,
       name: user.name || undefined,
+      permissions: userPermissions,
+      roles: roleNames,
     })
 
     // Create response and set cookie

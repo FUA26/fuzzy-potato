@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyToken } from '@/lib/auth'
+import { verifyToken, getUserPermissions, getUserRoles } from '@/lib/auth'
 import { db } from '@/db'
 import { users } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -34,7 +34,19 @@ export async function GET(req: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = userResult[0]
 
-    return NextResponse.json({ user: userWithoutPassword })
+    // Get user permissions and roles
+    const [userPermissions, userRolesData] = await Promise.all([
+      getUserPermissions(userResult[0].id),
+      getUserRoles(userResult[0].id),
+    ])
+
+    return NextResponse.json({
+      user: {
+        ...userWithoutPassword,
+        permissions: userPermissions,
+        roles: userRolesData,
+      },
+    })
   } catch (error) {
     console.error('Get user error:', error)
     return NextResponse.json(
