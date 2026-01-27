@@ -13,6 +13,7 @@ import {
   ListTodo,
   Users,
   Briefcase,
+  Database,
 } from 'lucide-react'
 
 import {
@@ -100,6 +101,12 @@ const data = {
           requiredPermission: 'permissions.read',
         },
       ],
+    },
+    {
+      title: 'Resources',
+      url: '/resources',
+      icon: Database,
+      requiredPermission: 'resources.read',
     },
     {
       title: 'Settings',
