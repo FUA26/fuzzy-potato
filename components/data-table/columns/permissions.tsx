@@ -96,6 +96,12 @@ export function getPermissionsColumns({
           </Badge>
         )
       },
+      filterFn: (row, columnId, filterValue) => {
+        const value = row.getValue(columnId) as string
+        const filterArray = filterValue as string[]
+        if (!filterArray || filterArray.length === 0) return true
+        return filterArray.includes(value)
+      },
     },
     {
       accessorKey: 'action',
@@ -125,6 +131,12 @@ export function getPermissionsColumns({
             {action}
           </Badge>
         )
+      },
+      filterFn: (row, columnId, filterValue) => {
+        const value = row.getValue(columnId) as string
+        const filterArray = filterValue as string[]
+        if (!filterArray || filterArray.length === 0) return true
+        return filterArray.includes(value)
       },
     },
     {

@@ -95,6 +95,15 @@ export function getRolesColumns({
           </Badge>
         )
       },
+      filterFn: (row, columnId, filterValue) => {
+        const value = row.getValue(columnId) as boolean
+        const filterArray = filterValue as string[]
+
+        if (!filterArray || filterArray.length === 0) return true
+
+        const stringValue = value ? 'true' : 'false'
+        return filterArray.includes(stringValue)
+      },
     },
     {
       accessorKey: 'createdAt',

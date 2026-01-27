@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -82,6 +82,8 @@ export default function PermissionsPage() {
     null
   )
 
+  const mountedRef = useRef(true)
+
   const form = useForm<PermissionFormValues>({
     resolver: zodResolver(permissionSchema),
     defaultValues: {
@@ -99,19 +101,32 @@ export default function PermissionsPage() {
       const response = await fetch('/api/admin/permissions')
       if (!response.ok) throw new Error('Failed to fetch permissions')
       const result = await response.json()
-      setData(result.permissions)
+
+      if (mountedRef.current) {
+        setData(result.permissions)
+      }
     } catch (error) {
-      console.error('Error fetching permissions:', error)
-      toast.error('Failed to load permissions')
+      if (mountedRef.current) {
+        console.error('Error fetching permissions:', error)
+        toast.error('Failed to load permissions')
+      }
     } finally {
-      setIsLoading(false)
+      if (mountedRef.current) {
+        setIsLoading(false)
+      }
     }
   }, [])
 
-  // Initial fetch
+  // Initial fetch and cleanup
   useEffect(() => {
+    mountedRef.current = true
     fetchPermissions()
-  }, [fetchPermissions])
+
+    return () => {
+      mountedRef.current = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Handle edit
   const handleEdit = useCallback(

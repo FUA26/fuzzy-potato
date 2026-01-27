@@ -7,3 +7,4 @@ export { DataTableViewOptions } from './view-options'
 // Export types
 export type { Role } from './columns/roles'
 export type { Permission } from './columns/permissions'
+export type { User } from './columns/users'
