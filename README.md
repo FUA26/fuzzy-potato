@@ -1,6 +1,6 @@
-# Task Manager - Next.js 16 Fullstack Application
+# Feedback SaaS Platform
 
-A comprehensive task management system built with Next.js 16, featuring Role-Based Access Control (RBAC), Resource Management, and a modern backoffice interface.
+A comprehensive feedback collection and analytics platform built with Next.js 16, featuring multi-project management, customizable widgets, real-time analytics, and Role-Based Access Control (RBAC).
 
 ## 🚀 Tech Stack
 
@@ -13,7 +13,8 @@ A comprehensive task management system built with Next.js 16, featuring Role-Bas
 - **Theming**: next-themes (Dark/Light mode)
 - **Fonts**: Inter (Google Fonts)
 - **Database**: [Drizzle ORM](https://orm.drizzle.team) + PostgreSQL
-- **Authentication**: JWT with httpOnly cookies
+- **Authentication**: NextAuth.js with Credentials Provider
+- **Authorization**: Role-Based Access Control (RBAC)
 - **Form Handling**: React Hook Form + Zod validation
 
 ## 📋 Table of Contents
@@ -196,13 +197,30 @@ Visit [http://localhost:3000](http://localhost:3000)
 
 ## Features
 
+### 🎯 Feedback Collection System
+
+- **Multi-Project Management**: Create and manage multiple feedback projects
+- **Customizable Widget Builder**: Visual editor with conditional logic
+- **Rating System**: 1-5 star rating with customizable tags
+- **Smart Logic Builder**: Different questions based on rating (positive/negative/neutral)
+- **Domain Whitelist**: CORS protection for widget security
+- **Public Widget API**: Fast endpoints for widget integration
+
+### 📊 Analytics Dashboard
+
+- **Real-time Statistics**: Total feedback, average rating, NPS score
+- **Time Series Charts**: Daily/weekly/monthly trends
+- **Tag Analysis**: Top tags with sentiment tracking
+- **Performance Metrics**: Response time, completion rate
+- **Export Data**: CSV export (Pro feature)
+
 ### 🔐 Authentication & Authorization
 
-- **JWT-based authentication** with httpOnly cookies
-- **Role-Based Access Control (RBAC)** with fine-grained permissions
-- **Resource Management** for centralized permission definitions
-- **User-Role Management** with easy role assignment interface
-- **Permission-based UI filtering** - sidebar and components adapt to user permissions
+- **NextAuth.js**: Secure authentication with credentials provider
+- **Role-Based Access Control (RBAC)**: Fine-grained permissions
+- **Resource Management**: Centralized permission definitions
+- **User-Role Management**: Easy role assignment interface
+- **Permission-based UI Filtering**: Components adapt to user permissions
 
 ### 👥 User Management
 
@@ -257,7 +275,11 @@ fuzzy-potato/
 │   │   ├── permissions/          # Permission management
 │   │   └── resources/            # Resource management
 │   ├── api/                      # API routes
-│   │   ├── auth/                 # Authentication endpoints
+│   │   ├── v1/                   # Public API (widget)
+│   │   │   └── widget/           # Widget endpoints
+│   │   ├── dashboard/            # Private API (dashboard)
+│   │   │   └── projects/         # Project management
+│   │   ├── auth/                 # NextAuth endpoints
 │   │   └── admin/                # Admin endpoints
 │   ├── layout.tsx                # Root layout
 │   └── page.tsx                  # Landing page
@@ -275,7 +297,10 @@ fuzzy-potato/
 │   │   ├── permissions.ts
 │   │   ├── resources.ts          # Resource definitions
 │   │   ├── user-roles.ts         # User-role relationships
-│   │   └── role-permissions.ts    # Role-permission relationships
+│   │   ├── role-permissions.ts    # Role-permission relationships
+│   │   ├── projects.ts           # Projects (Feedback SaaS)
+│   │   ├── feedbacks.ts          # Feedbacks (high-volume)
+│   │   └── webhooks.ts           # Webhooks (integrations)
 │   ├── seed-rbac.ts              # RBAC seed script
 │   ├── seed-resources.ts         # Resources seed script
 │   ├── assign-admin.ts           # Admin assignment script
@@ -408,10 +433,34 @@ export default async function Page() {
 
 ## API Endpoints
 
+### Public API (Widget)
+
+- `GET /api/v1/widget/config` - Get widget configuration (CORS protected)
+- `POST /api/v1/widget/feedback` - Submit feedback
+
+### Private API (Dashboard)
+
+**Projects:**
+
+- `GET /api/dashboard/projects` - List all projects
+- `POST /api/dashboard/projects` - Create new project
+- `GET /api/dashboard/projects/[id]` - Get project details
+- `PATCH /api/dashboard/projects/[id]` - Update project
+- `DELETE /api/dashboard/projects/[id]` - Delete project
+- `GET /api/dashboard/projects/[id]/stats` - Get analytics statistics
+- `GET /api/dashboard/projects/[id]/feedbacks` - Get feedbacks with pagination
+- `PATCH /api/dashboard/projects/[id]/feedbacks` - Bulk update feedback status
+- `GET /api/dashboard/projects/[id]/install` - Get installation assets
+
+**Feedbacks:**
+
+- `PATCH /api/dashboard/feedbacks/[feedbackId]` - Update feedback status
+- `DELETE /api/dashboard/feedbacks/[feedbackId]` - Delete feedback
+
 ### Authentication
 
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
+- `POST /api/auth/login` - User login (NextAuth)
+- `POST /api/auth/logout` - User logout (NextAuth)
 - `POST /api/auth/register` - User registration
 - `GET /api/auth/me` - Get current user with permissions
 

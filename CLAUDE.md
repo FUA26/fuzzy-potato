@@ -4,7 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js 16 fullstack boilerplate using App Router, TypeScript, and Tailwind CSS v4. The project follows a phased development approach documented in `docs/PROJECT_ROADMAP.md`. Currently in Phase 3 (Database Layer).
+This is a **Feedback SaaS Platform** built with Next.js 16, featuring multi-project feedback collection, widget builder, analytics dashboard, and Role-Based Access Control (RBAC). The project includes both a backoffice for managing feedback projects and public APIs for widget integration.
+
+**Core Product:**
+
+- **Feedback Collection System**: Multi-project widget with customizable logic builder
+- **Analytics Dashboard**: Real-time NPS, ratings, sentiment analysis
+- **Widget Builder**: Visual editor for feedback forms with conditional logic
+- **API-First**: Public widget APIs + private dashboard APIs
 
 **Tech Stack:**
 
@@ -17,7 +24,8 @@ This is a Next.js 16 fullstack boilerplate using App Router, TypeScript, and Tai
 - Theming: next-themes (Dark/Light mode)
 - Fonts: Inter (Google Fonts)
 - Database: Drizzle ORM + PostgreSQL
-- Planned: Authentication & Features (Phase 4)
+- Authentication: NextAuth.js with Credentials Provider
+- Authorization: RBAC with fine-grained permissions
 
 ## Common Commands
 
@@ -46,23 +54,49 @@ pnpm db:studio       # Open Drizzle Studio for database GUI
 ### Project Structure
 
 ```
-app/                 # Next.js App Router directory
-  ├── layout.tsx     # Root layout with fonts & metadata
-  ├── page.tsx       # Main page
-  └── globals.css    # Global styles (Tailwind v4)
-components/          # React components
-  ├── theme-provider.tsx  # Theme provider for dark/light mode
-  └── ui/            # Shadcn UI component primitives
-db/                  # Database layer
-  ├── index.ts       # Database client export
-  └── schema/        # Database schema definitions
-      ├── users.ts   # Users table
-      ├── posts.ts   # Posts table
-      └── index.ts   # Schema exports
-docs/                # Project documentation
-drizzle/             # Database migrations (auto-generated)
-lib/                 # Utility functions
-  └── utils.ts       # Common utilities (cn() function)
+app/                      # Next.js App Router directory
+  ├── (auth)/             # Auth routes (login, register, etc.)
+  ├── (backoffice)/       # Protected backoffice routes
+  ├── api/                # API routes
+  │   ├── v1/             # Public API (widget)
+  │   │   └── widget/     # Widget endpoints (config, feedback)
+  │   ├── dashboard/      # Private API (dashboard)
+  │   │   ├── projects/   # Project CRUD, stats, feedbacks
+  │   │   └── feedbacks/  # Feedback management
+  │   ├── auth/           # NextAuth endpoints
+  │   └── admin/          # Admin endpoints (RBAC)
+  ├── layout.tsx          # Root layout
+  └── page.tsx            # Landing page
+components/               # React components
+  ├── ui/                 # Shadcn UI component primitives
+  └── ...
+db/                      # Database layer
+  ├── index.ts            # Database client export (singleton pattern)
+  ├── schema/             # Database schema definitions
+  │   ├── users.ts        # Users table
+  │   ├── roles.ts        # Roles table
+  │   ├── permissions.ts  # Permissions table
+  │   ├── user-roles.ts   # User-role junction table
+  │   ├── role-permissions.ts # Role-permission junction table
+  │   ├── resources.ts    # Resources table (RBAC)
+  │   ├── projects.ts     # Projects table (Feedback SaaS)
+  │   ├── feedbacks.ts    # Feedbacks table (high-volume)
+  │   ├── webhooks.ts     # Webhooks table (integrations)
+  │   └── index.ts        # Schema exports
+  └── reset-feedback-tables.ts # Utility script
+docs/                    # Project documentation
+  ├── PRD.md              # Product Requirement Document (Feedback SaaS)
+  ├── ERD.md              # Database Schema Documentation
+  ├── API.md              # API Contract Specification
+  └── ...
+drizzle/                 # Database migrations (auto-generated)
+lib/                     # Utility functions
+  ├── api/               # API helpers
+  │   └── auth.ts        # requireAuth() helper
+  ├── auth/              # Authentication utilities
+  │   ├── password.ts    # Password hashing
+  │   └── permissions.ts # Permission helpers
+  └── utils.ts           # Common utilities (cn() function)
 ```
 
 ### Path Aliases
@@ -98,9 +132,16 @@ lib/                 # Utility functions
 
 The `docs/` directory contains critical architectural context:
 
+**Feedback SaaS Documentation:**
+
+- `docs/PRD.md` - Product Requirement Document (features, business logic)
+- `docs/ERD.md` - Database Schema Documentation (indexes, relationships)
+- `docs/API.md` - API Contract Specification (endpoints, request/response)
+
+**General Documentation:**
+
 - `docs/GENERAL_KNOWLEDGE.md` - Best practices, technology decisions, coding standards
-- `docs/PROJECT_ROADMAP.md` - 6-phase development plan
-- `docs/PHASE_3_DATABASE.md` - Current phase requirements (Database Layer)
+- `docs/PROJECT_ROADMAP.md` - Development phases
 
 When making architectural decisions, reference these files first to maintain consistency with the project's long-term vision.
 
@@ -131,25 +172,40 @@ When making architectural decisions, reference these files first to maintain con
 - Landing page with header, banner, and navigation
 - Theme toggle component
 
-**Phase 3 - In Progress:**
+**Phase 3 - Database Layer: Completed**
 
 - Drizzle ORM configured with PostgreSQL
-- Database client initialized in `src/db/index.ts`
-- Example schemas created:
-  - Users table (id, email, name, username, image, timestamps)
-  - Posts table (id, title, content, published, authorId, timestamps)
-- Drizzle Kit configuration for migrations
-- Database scripts added to package.json
-- Environment variables documented in `.env.example`
+- Database client with singleton pattern
+- Auth & RBAC schemas: users, roles, permissions, user-roles, role-permissions, resources
+- Feedback SaaS schemas: projects, feedbacks, webhooks
+- High-performance indexes (composite, GIN for JSONB)
+- Migration system with Drizzle Kit
 
-**Still needed in Phase 3:**
+**Phase 4 - Feedback SaaS Implementation: Completed**
 
-None - Phase 3 is complete!
+- ✅ Public API (Widget): config endpoint with CORS protection, feedback submission
+- ✅ Private API (Dashboard): Projects CRUD, analytics, feedback management
+- ✅ Authentication: NextAuth.js with credentials provider
+- ✅ Authorization: RBAC with fine-grained permissions
+- ✅ Database optimization: Indexes for high-volume queries
 
-**Next Phase (Phase 4):**
+**Current Status: API Layer Complete**
 
-- Authentication system implementation
-- User registration and login
-- Feature development
+All backend APIs are implemented and ready:
+
+- Projects management (create, read, update, delete)
+- Feedback collection with validation (Zod)
+- Analytics dashboard (NPS, average rating, time series)
+- Advanced filtering (rating, tags, status, search)
+- Pagination support
+- Feature gating infrastructure (tier system)
+
+**Next Phase: Frontend Dashboard UI** (Optional)
+
+- Project list and management pages
+- Widget Builder (Logic Builder UI)
+- Feedback Inbox with filters
+- Analytics charts and visualizations
+- Installation page with script embed
 
 See `docs/PROJECT_ROADMAP.md` for the complete development plan.
