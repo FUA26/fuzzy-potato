@@ -5,6 +5,8 @@ export const users = pgTable('users', {
   email: varchar('email', { length: 255 }).notNull().unique(),
   name: varchar('name', { length: 255 }),
   username: varchar('username', { length: 50 }).unique(),
+  provider: varchar('provider', { length: 255 }),
+  keycloakId: varchar('keycloak_id', { length: 255 }),
   password: varchar('password', { length: 255 }).notNull(),
   image: text('image'),
   emailVerified: timestamp('email_verified', { mode: 'date' }),
