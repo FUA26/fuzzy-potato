@@ -3,6 +3,7 @@ import Credentials from 'next-auth/providers/credentials'
 import { db } from '@/db'
 import { users } from '@/db/schema'
 import { verifyPassword } from '@/lib/auth/password'
+import { getUserPermissions } from '@/lib/auth/permissions'
 import { eq, or } from 'drizzle-orm'
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -63,6 +64,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       if (session.user && token.id) {
         session.user.id = token.id as string
+
+        // Load user permissions from database
+        try {
+          const permissions = await getUserPermissions(token.id as string)
+          session.user.permissions = permissions
+        } catch (error) {
+          console.error('Error loading user permissions:', error)
+          session.user.permissions = []
+        }
       }
       return session
     },
