@@ -1,6 +1,6 @@
 import { db } from '@/db'
 import { userRoles, rolePermissions, permissions, roles } from '@/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
 /**
  * Get all permission slugs for a user.
@@ -14,17 +14,50 @@ import { eq, and } from 'drizzle-orm'
  * @returns Array of permission slugs (e.g., ['users.read', 'posts.create'])
  */
 export async function getUserPermissions(userId: string): Promise<string[]> {
-  const userPermissions = await db
-    .select({
-      slug: permissions.slug,
-    })
-    .from(userRoles)
-    .innerJoin(roles, eq(userRoles.roleId, roles.id))
-    .innerJoin(rolePermissions, eq(rolePermissions.roleId, roles.id))
-    .innerJoin(permissions, eq(rolePermissions.permissionId, permissions.id))
-    .where(eq(userRoles.userId, userId))
+  console.log(`[Permissions] Loading permissions for user: ${userId}`)
 
-  return userPermissions.map((p) => p.slug)
+  try {
+    console.log('[Permissions] Executing query...')
+    const userPermissions = await db
+      .select({
+        slug: permissions.slug,
+      })
+      .from(userRoles)
+      .innerJoin(roles, eq(userRoles.roleId, roles.id))
+      .innerJoin(rolePermissions, eq(rolePermissions.roleId, roles.id))
+      .innerJoin(permissions, eq(rolePermissions.permissionId, permissions.id))
+      .where(eq(userRoles.userId, userId))
+
+    console.log(
+      `[Permissions] Query succeeded, found ${userPermissions.length} permissions`
+    )
+    return userPermissions.map((p) => p.slug)
+  } catch (error) {
+    // Log error with more context and re-throw for session callback to handle
+    console.error(
+      `[Permissions] Failed to load permissions for user ${userId}:`
+    )
+
+    if (error instanceof Error) {
+      console.error('[Permissions] Error name:', error.name)
+      console.error('[Permissions] Error message:', error.message)
+      console.error('[Permissions] Error stack:', error.stack)
+
+      // Try to extract postgres-js specific error info
+      const err = error as Error & Record<string, unknown>
+      if (err.cause) {
+        console.error('[Permissions] Error cause:', err.cause)
+      }
+      if (err.query) {
+        console.error('[Permissions] Failed query:', err.query)
+      }
+      if (err.params) {
+        console.error('[Permissions] Query params:', err.params)
+      }
+    }
+
+    throw error
+  }
 }
 
 /**
