@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { db } from '@/db'
 import { users, roles, userRoles } from '@/db/schema'
 import { eq } from 'drizzle-orm'
