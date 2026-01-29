@@ -1,6 +1,5 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -108,7 +107,7 @@ export default async function ProjectsPage() {
 }
 
 async function TotalProjects({ userId }: { userId: string }) {
-  const { data } = await fetch(
+  const response = await fetch(
     `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/dashboard/projects`,
     {
       cache: 'no-store',
@@ -116,13 +115,14 @@ async function TotalProjects({ userId }: { userId: string }) {
         cookie: `next-auth.session-token=${userId}`,
       },
     }
-  ).then((res) => res.json())
+  )
+  const { data } = await response.json()
 
   return <div className="text-2xl font-bold">{data?.length || 0}</div>
 }
 
 async function TotalFeedback({ userId }: { userId: string }) {
-  const { data } = await fetch(
+  const response = await fetch(
     `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/dashboard/projects`,
     {
       cache: 'no-store',
@@ -130,7 +130,8 @@ async function TotalFeedback({ userId }: { userId: string }) {
         cookie: `next-auth.session-token=${userId}`,
       },
     }
-  ).then((res) => res.json())
+  )
+  const { data } = await response.json()
 
   const total =
     data?.reduce(
@@ -141,7 +142,7 @@ async function TotalFeedback({ userId }: { userId: string }) {
 }
 
 async function AvgRating({ userId }: { userId: string }) {
-  const { data } = await fetch(
+  const response = await fetch(
     `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/dashboard/projects`,
     {
       cache: 'no-store',
@@ -149,7 +150,8 @@ async function AvgRating({ userId }: { userId: string }) {
         cookie: `next-auth.session-token=${userId}`,
       },
     }
-  ).then((res) => res.json())
+  )
+  const { data } = await response.json()
 
   const projectsWithRatings =
     data?.filter((p: ProjectData) => p.avgRating !== null) || []
