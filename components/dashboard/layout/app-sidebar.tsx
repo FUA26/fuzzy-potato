@@ -9,7 +9,6 @@ import {
   Send,
   Settings2,
   LayoutDashboard,
-  ListTodo,
   Users,
   Briefcase,
   Database,
@@ -38,45 +37,10 @@ const data = {
       requiredPermission: 'dashboard.view',
     },
     {
-      title: 'Task Management',
-      url: '#',
-      icon: ListTodo,
-      requiredPermission: 'tasks.read',
-      items: [
-        {
-          title: 'All Tasks',
-          url: '/tasks',
-          requiredPermission: 'tasks.read',
-        },
-        {
-          title: 'My Tasks',
-          url: '/tasks/my',
-          requiredPermission: 'tasks.read',
-        },
-        {
-          title: 'Kanban Board',
-          url: '/tasks/kanban',
-          requiredPermission: 'tasks.read',
-        },
-      ],
-    },
-    {
       title: 'Projects',
-      url: '#',
+      url: '/projects',
       icon: Briefcase,
       requiredPermission: 'projects.read',
-      items: [
-        {
-          title: 'All Projects',
-          url: '/projects',
-          requiredPermission: 'projects.read',
-        },
-        {
-          title: 'Active Projects',
-          url: '/projects/active',
-          requiredPermission: 'projects.read',
-        },
-      ],
     },
     {
       title: 'User Management',
@@ -188,7 +152,7 @@ export function AppSidebar({
                 </div>
                 <div className="grid flex-1 text-left leading-tight">
                   <span className="truncate text-base font-bold">
-                    Task Manager
+                    Feedback SaaS
                   </span>
                   <span className="truncate text-xs font-medium opacity-80">
                     Enterprise

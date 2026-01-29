@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { feedbacks, projects } from '@/db/schema'
-import { eq, and } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { requireAuth } from '@/lib/api/auth'
 import { z } from 'zod'
 
@@ -22,7 +22,7 @@ const UpdateFeedbackSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { feedbackId: string } }
+  { params }: { params: Promise<{ feedbackId: string }> }
 ) {
   const authResult = await requireAuth()
 
@@ -31,7 +31,7 @@ export async function PATCH(
   }
 
   const session = authResult.session!
-  const feedbackId = params.feedbackId
+  const { feedbackId } = await params
 
   try {
     const body = await request.json()
@@ -97,7 +97,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { feedbackId: string } }
+  { params }: { params: Promise<{ feedbackId: string }> }
 ) {
   const authResult = await requireAuth()
 
@@ -106,7 +106,7 @@ export async function DELETE(
   }
 
   const session = authResult.session!
-  const feedbackId = params.feedbackId
+  const { feedbackId } = await params
 
   try {
     // Verify ownership

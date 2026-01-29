@@ -1,4 +1,4 @@
-import { auth as authHandler } from '@/auth'
+import { handlers } from '@/auth'
 
 // Runtime configuration: explicitly use Node.js runtime
 // This is required because postgres-js driver needs Node.js 'net' module
@@ -18,4 +18,4 @@ export const runtime = 'nodejs'
  *
  * @see https://authjs.dev/reference/nextjs
  */
-export { authHandler as GET, authHandler as POST }
+export const { GET, POST } = handlers

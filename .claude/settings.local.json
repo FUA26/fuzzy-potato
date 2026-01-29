@@ -7,7 +7,9 @@
       "Bash(ls:*)",
       "Bash(find:*)",
       "Bash(pnpm check-types:*)",
-      "Bash(pnpm lint:*)"
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm install:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

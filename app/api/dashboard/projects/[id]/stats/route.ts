@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { projects, feedbacks } from '@/db/schema'
-import { eq, and, sql, gte, lte, desc } from 'drizzle-orm'
+import { eq, and, sql, gte } from 'drizzle-orm'
 import { requireAuth } from '@/lib/api/auth'
-import { z } from 'zod'
 
 /**
  * GET /api/dashboard/projects/[id]/stats
@@ -22,7 +21,7 @@ import { z } from 'zod'
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const authResult = await requireAuth()
 
@@ -31,7 +30,7 @@ export async function GET(
   }
 
   const session = authResult.session!
-  const projectId = params.id
+  const { id: projectId } = await params
 
   try {
     const searchParams = request.nextUrl.searchParams

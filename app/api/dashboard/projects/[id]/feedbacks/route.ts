@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/db'
 import { projects, feedbacks } from '@/db/schema'
-import { eq, and, desc, sql, or } from 'drizzle-orm'
+import { eq, and, desc, sql } from 'drizzle-orm'
 import { requireAuth } from '@/lib/api/auth'
 import { z } from 'zod'
 
@@ -23,7 +23,7 @@ import { z } from 'zod'
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const authResult = await requireAuth()
 
@@ -32,7 +32,7 @@ export async function GET(
   }
 
   const session = authResult.session!
-  const projectId = params.id
+  const { id: projectId } = await params
 
   try {
     const searchParams = request.nextUrl.searchParams
@@ -158,7 +158,7 @@ const BulkUpdateSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const authResult = await requireAuth()
 
@@ -167,7 +167,7 @@ export async function PATCH(
   }
 
   const session = authResult.session!
-  const projectId = params.id
+  const { id: projectId } = await params
 
   try {
     const body = await request.json()

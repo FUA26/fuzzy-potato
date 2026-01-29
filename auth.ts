@@ -54,18 +54,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     ...authConfig.callbacks,
+    async jwt({ token, user, trigger, session }) {
+      // Add user ID to token on sign in
+      if (user) {
+        token.id = user.id
+        // Load permissions once and store in JWT token
+        try {
+          const permissions = await getUserPermissions(user.id as string)
+          token.permissions = permissions
+        } catch (error) {
+          console.error('Error loading user permissions:', error)
+          token.permissions = []
+        }
+      }
+
+      // Handle session update (if needed in future)
+      if (trigger === 'update' && session) {
+        return { ...token, ...session }
+      }
+
+      return token
+    },
     async session({ session, token }) {
       if (session.user && token.id) {
         session.user.id = token.id as string
-
-        // Load user permissions from database
-        try {
-          const permissions = await getUserPermissions(token.id as string)
-          session.user.permissions = permissions
-        } catch (error) {
-          console.error('Error loading user permissions:', error)
-          session.user.permissions = []
-        }
+        // Permissions from JWT token (cached, no DB hit)
+        session.user.permissions = (token.permissions as string[]) || []
       }
       return session
     },

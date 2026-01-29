@@ -14,7 +14,7 @@ import { requireAuth } from '@/lib/api/auth'
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const authResult = await requireAuth()
 
@@ -23,7 +23,7 @@ export async function GET(
   }
 
   const session = authResult.session!
-  const projectId = params.id
+  const { id: projectId } = await params
 
   try {
     // Verify ownership

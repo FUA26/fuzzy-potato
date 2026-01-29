@@ -15,7 +15,7 @@ import { z } from 'zod'
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const authResult = await requireAuth()
 
@@ -24,7 +24,7 @@ export async function GET(
   }
 
   const session = authResult.session!
-  const projectId = params.id
+  const { id: projectId } = await params
 
   try {
     const project = await db
@@ -104,7 +104,7 @@ const UpdateProjectSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const authResult = await requireAuth()
 
@@ -113,7 +113,7 @@ export async function PATCH(
   }
 
   const session = authResult.session!
-  const projectId = params.id
+  const { id: projectId } = await params
 
   try {
     const body = await request.json()
@@ -174,7 +174,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const authResult = await requireAuth()
 
@@ -183,7 +183,7 @@ export async function DELETE(
   }
 
   const session = authResult.session!
-  const projectId = params.id
+  const { id: projectId } = await params
 
   try {
     // Verify ownership

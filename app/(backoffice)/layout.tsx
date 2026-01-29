@@ -38,7 +38,7 @@ export default async function BackofficeLayout({
         <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4 backdrop-blur">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
-            <h1 className="text-lg font-semibold">Dashboard</h1>
+            <h1 className="text-lg font-semibold">Feedback SaaS</h1>
           </div>
           <div className="flex items-center gap-2">
             <HeaderNotifications />
